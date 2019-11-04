@@ -60,10 +60,12 @@ class Player(Sprite):
 
     def next_map(self):
         if self.map_no < len(self.maps) - 1:
+            total_lanes_on_prev_map = self.map.lane
             self.map_no += 1
             self.map = self.maps[self.map_no]
             self.absolute_y = 0
-            self.lane = (self.map.lane // 2 - 1)
+            self.lane = round(
+                self.lane / total_lanes_on_prev_map * self.map.lane)
         else:
             self.reached_cafeteria = True
             self.v = 0
