@@ -283,10 +283,9 @@ class NPC(pyglet.sprite.Sprite):
 
 
 class Map():
-    def __init__(self, name='', display_name='', type_abbr='co', lanes=1, length=10000, npc_density=0.0, exits=[]):
+    def __init__(self, name='', display_name='', lanes=1, length=10000, npc_density=0.0, exits=[]):
         self.name = name
         self.display_name = display_name
-        self.type = map_type_hash[type_abbr]
         self.lanes = lanes
         self.lanes_x = calc_lanes_x(width, lane_width, lanes)
         self.length = length

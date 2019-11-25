@@ -29,10 +29,3 @@ def calc_selecs_x(window_width: int, padding: int, labelwidth: int, len_choices:
         return (window_width/2-padding-labelwidth,
                 window_width/2,
                 window_width/2+padding+labelwidth)
-
-
-map_type_hash = {
-    'co': 'corridor',
-    'st': 'stairs',
-    'ro': 'room'
-}
