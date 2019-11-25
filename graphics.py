@@ -2,7 +2,7 @@ import pyglet
 from readmaps import read
 from readserial import view_value
 from utils import dualdigit, format_time, center_image, \
-    calc_lanes_x, map_type_hash, calc_selecs_x
+    calc_lanes_x, calc_selecs_x
 from random import random, randint
 keys = pyglet.window.key
 

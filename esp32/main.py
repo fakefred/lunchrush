@@ -1,10 +1,9 @@
 from machine import Pin
 from time import sleep_ms
 
-pins = [
-    Pin(2, Pin.IN),  # pedal_l
-    Pin(15, Pin.IN)  # pedal_r
-]
+pin_no = [2, 15]
+
+pins = [Pin(i, Pin.IN) for i in pin_no]
 
 while True:
     out = ''
