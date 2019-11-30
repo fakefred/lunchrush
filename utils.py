@@ -1,9 +1,9 @@
 def dualdigit(num: int) -> str:
-    return (str(num) if num > 9 else '0' + str(num)) if num < 100 else str(num % 100)
+    return (str(num) if num > 9 else "0" + str(num)) if num < 100 else str(num % 100)
 
 
 def format_time(time: list) -> str:
-    return f'{str(time[0])}:{dualdigit(time[1])}:{dualdigit(time[2])}'
+    return f"{str(time[0])}:{dualdigit(time[1])}:{dualdigit(time[2])}"
 
 
 def center_image(image):
@@ -21,11 +21,22 @@ def calc_lanes_x(window_width: int, lane_width: int, lanes: int) -> tuple:
     return tuple(range(start, end, lane_width))
 
 
-def calc_selecs_x(window_width: int, padding: int, labelwidth: int, len_choices: int) -> tuple:
+def calc_lane_separators_x(window_width: int, lane_width: int, lanes: int) -> tuple:
+    lanes_x = calc_lanes_x(window_width, lane_width, lanes)
+    return [int(x - lane_width / 2) for x in lanes_x + (lanes_x[-1] + lane_width,)]
+
+
+def calc_selecs_x(
+    window_width: int, padding: int, labelwidth: int, len_choices: int
+) -> tuple:
     if len_choices == 2:
-        return (window_width/2-padding/2-labelwidth/2,
-                window_width/2+padding/2+labelwidth/2)
+        return (
+            window_width / 2 - padding / 2 - labelwidth / 2,
+            window_width / 2 + padding / 2 + labelwidth / 2,
+        )
     elif len_choices == 3:
-        return (window_width/2-padding-labelwidth,
-                window_width/2,
-                window_width/2+padding+labelwidth)
+        return (
+            window_width / 2 - padding - labelwidth,
+            window_width / 2,
+            window_width / 2 + padding + labelwidth,
+        )

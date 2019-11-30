@@ -1,27 +1,38 @@
+#!/usr/bin/python3.8
 import pyglet
 from readmaps import read
-from readserial import view_value
-from utils import dualdigit, format_time, center_image, \
-    calc_lanes_x, calc_selecs_x
+
+# from readserial import view_value
+from utils import (
+    dualdigit,
+    format_time,
+    center_image,
+    calc_lanes_x,
+    calc_selecs_x,
+    calc_lane_separators_x,
+)
 from random import random, randint
+
 keys = pyglet.window.key
 
-DEBUG = True
+DEBUG = False
 
 """ ALL THE CLASSES """
+base_velocity = 120
 
 
 class Player(pyglet.sprite.Sprite):
     # Player: the actual player of this game
     # inherits pyglet.sprite.Sprite
     # switches lanes; does not move vertically on the screen
-    def __init__(self, destination, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.destination = destination
         self.initiating = True
         self.y = 120
         # start from #0
         self.map = route[0]
+        self.minimap = pyglet.image.load(self.map.minimap_image_path)
+        next_map_cue.text = "下一关：" + maps[self.map.exits[0]].display_name
         # absolute_y: distance from map starting line
         self.absolute_y = 0
         # NPCs will move at NPC.v relative to Player.v
@@ -30,7 +41,7 @@ class Player(pyglet.sprite.Sprite):
         # delta_t = time since last step
         self.delta_t = 0.0
         # center self
-        self.lane = (route[0].lanes // 2 - 1)
+        self.lane = route[0].lanes // 2 - 1
         self.reached_cafeteria = False
         # choices
         self.approaching_EOM = False
@@ -43,9 +54,9 @@ class Player(pyglet.sprite.Sprite):
             # it is necessary to select a designated exit
             self.generate_exit_choices_labels()
 
-        maplabel.text = f'map: {self.map.name}'
+        maplabel.text = f"你在: {self.map.display_name}"
 
-        if not self.map.exits[0] == '':
+        if not self.map.exits[0] == "":
             # unless there's no exit, assume default exit
             route.append(maps[self.map.exits[0]])
 
@@ -88,7 +99,7 @@ class Player(pyglet.sprite.Sprite):
 
     def step(self):
         if not self.reached_cafeteria:
-            self.init_v = 136 / (self.delta_t + 0.01)  # prevent div-by-zero
+            self.init_v = base_velocity / (self.delta_t + 0.01)  # prevent div-by-zero
             self.v = self.init_v
             self.delta_t = 0
 
@@ -98,36 +109,42 @@ class Player(pyglet.sprite.Sprite):
         self.approaching_EOM = False
         self.show_choices = False
 
-        if map_idx < len(route) - 1:
+        if map_idx < len(route) - 1:  # if there's another map following in `route`
             total_lanes_on_prev_map = self.map.lanes
-            # literally next map
-            map_idx += 1
+            map_idx += 1  # literally next map
             self.map = route[map_idx]
-            maplabel.text = f'map: {self.map.name}'
+            if not (path := self.map.minimap_image_path).endswith(
+                "/.png"  # walrus operator; some python 3.8 syntactic sugar
+            ):  # no filename
+                self.minimap = pyglet.image.load(path)
+
+            maplabel.text = f"你在: {self.map.display_name}"
+            finish_line.reset()
+
             # default selection
-            if not self.map.exits[0] == '':
-                # assume
+            if not self.map.exits[0] == "":
+                # assume idx is 0
+                # will be popped once player alters exit
                 route.append(maps[self.map.exits[0]])
+
             # reset exit choices
             self.exit_choices = self.map.exits
+            self.exit_choice_idx = 0
 
-            if self.destination not in self.map.exits:
-                # map does not lead to cafeteria of choice
-                self.exit_choice_idx = 0
-            else:
-                self.exit_choice_idx = self.exit_choices.index(
-                    self.destination)
-                # self.
+            try:
+                next_map_cue.text = "下一关：" + maps[self.exit_choices[0]].display_name
+            except KeyError:
+                pass
 
             if len(self.exit_choices) > 1:
                 # it is necessary to select a designated exit
                 self.generate_exit_choices_labels()
+
             # the `soft-reset` procedure
             self.absolute_y = 0
-            self.lane = int(
-                self.lane / total_lanes_on_prev_map * self.map.lanes)
-        else:
-            if self.destination == route[map_idx].name:
+            self.lane = int(self.lane / total_lanes_on_prev_map * self.map.lanes)
+        else:  # nothing following; end of route
+            if self.map.exits == [""]:
                 self.reached_cafeteria = True
                 # stop running
                 self.v = 0
@@ -152,23 +169,34 @@ class Player(pyglet.sprite.Sprite):
         x_axis = calc_selecs_x(width, 25, 200, len(self.exit_choices))
         exit_x_assignment_idx = 0
         for exit in self.exit_choices:
-            self.exit_choices_labels.append(pyglet.text.Label(
-                text=maps[exit].display_name,
-                x=x_axis[exit_x_assignment_idx], y=(height - 80),
-                width=300, height=100, align='center', color=(0, 0, 0, 255),
-                anchor_x='center', font_size=28, font_name='Noto Sans CJK SC',
-                batch=self.exit_choices_labels_batch))
+            self.exit_choices_labels.append(
+                pyglet.text.Label(
+                    text=maps[exit].display_name,
+                    x=x_axis[exit_x_assignment_idx],
+                    y=200,
+                    width=300,
+                    height=100,
+                    align="center",
+                    color=(0, 0, 0, 255),
+                    anchor_x="center",
+                    font_size=28,
+                    font_name="Noto Sans CJK SC",
+                    batch=self.exit_choices_labels_batch,
+                )
+            )
             exit_x_assignment_idx += 1
-        self.exit_choices_labels[0].color = (255, 0, 0, 255)
+        self.exit_choices_labels[0].color = (248, 101, 57, 255)
 
     def alter_exit(self, idx):
-        prev_idx = self.exit_choice_idx
-        self.exit_choice_idx = idx
-        route.pop()
-        route.append(maps[self.map.exits[idx]])
-        # emphasize new choice
-        self.exit_choices_labels[prev_idx].color = (0, 0, 0, 255)
-        self.exit_choices_labels[idx].color = (255, 0, 0, 255)
+        if 0 <= idx < len(self.map.exits):
+            prev_idx = self.exit_choice_idx
+            self.exit_choice_idx = idx
+            route.pop()
+            route.append(maps[self.map.exits[idx]])
+            # emphasize new choice
+            self.exit_choices_labels[prev_idx].color = (0, 0, 0, 255)
+            self.exit_choices_labels[idx].color = (248, 101, 57, 255)
+            next_map_cue.text = "下一关：" + maps[self.map.exits[idx]].display_name
 
     def check_if_hit_npc(self):
         for npc in self.map.npcs:
@@ -235,9 +263,10 @@ class NPC(pyglet.sprite.Sprite):
         switch_threshold = 1
         for npc in self.map.npcs:
             if npc.lane == self.lane and npc is not self:
-                if (0 < self.y - npc.y < 100 and self.v < npc.v) or \
-                        (-100 < self.y - npc.y < 0 and self.v > npc.v):
-                        # going to hit from the (back) or (front)
+                if (0 < self.y - npc.y < 100 and self.v < npc.v) or (
+                    -100 < self.y - npc.y < 0 and self.v > npc.v
+                ):
+                    # going to hit from the (back) or (front)
                     switch_threshold -= 0.005
 
                 if abs(npc.v - self.v) < 50:
@@ -246,11 +275,19 @@ class NPC(pyglet.sprite.Sprite):
                     # additionally reduce thres
                     switch_threshold -= 0.005
 
-        if self.lane == player.lane and 0 < self.y - player.y < 100 and self.v < player.v:
+        if (
+            self.lane == player.lane
+            and 0 < self.y - player.y < 100
+            and self.v < player.v
+        ):
             # player approaching from back
             switch_threshold -= 0.02
             self.v += 10
-        elif self.lane == player.lane and -100 < self.y - player.y < 0 and self.v > player.v:
+        elif (
+            self.lane == player.lane
+            and -100 < self.y - player.y < 0
+            and self.v > player.v
+        ):
             # ... from front
             switch_threshold -= 0.02
             self.v -= 10
@@ -263,8 +300,9 @@ class NPC(pyglet.sprite.Sprite):
             left_ok = True if self.lane != 0 else False
             right_ok = True if self.lane < self.map.lanes else False
             for npc in self.map.npcs:
-                if (0 < self.y - npc.y < 80 and self.v < npc.v) or \
-                        (-80 < self.y - npc.y < 0 and self.v > npc.v):
+                if (0 < self.y - npc.y < 80 and self.v < npc.v) or (
+                    -80 < self.y - npc.y < 0 and self.v > npc.v
+                ):
                     # approaching self from either direction
                     if left_ok and npc.lane == self.lane - 1:
                         left_ok = False
@@ -282,8 +320,17 @@ class NPC(pyglet.sprite.Sprite):
                 self.right()
 
 
-class Map():
-    def __init__(self, name='', display_name='', lanes=1, length=10000, npc_density=0.0, exits=[]):
+class Map:
+    def __init__(
+        self,
+        name="",
+        display_name="",
+        lanes=1,
+        length=10000,
+        npc_density=0.0,
+        exits=[],
+        minimap_image_path="",
+    ):
         self.name = name
         self.display_name = display_name
         self.lanes = lanes
@@ -293,6 +340,7 @@ class Map():
         self.npc_density = npc_density
         self.initiate_npcs()
         self.exits = exits
+        self.minimap_image_path = minimap_image_path
 
     def initiate_npcs(self):
         npcs = []
@@ -300,10 +348,16 @@ class Map():
         for _ in range(round(self.npc_density * self.length * self.lanes)):
             # add new NPCs to `batch`
             # NPCs that have been running midway since game started
-            npcs.append(NPC(img=center_image(pyglet.resource.image('player/blackhat.png')),
-                            track=self, lane=randint(0, self.lanes - 1),
-                            y=randint(- self.length / 4, self.length),
-                            batch=batch, v=60.0))
+            npcs.append(
+                NPC(
+                    img=center_image(pyglet.resource.image("player/blackhat.png")),
+                    track=self,
+                    lane=randint(0, self.lanes - 1),
+                    y=randint(-self.length / 4, self.length),
+                    batch=batch,
+                    v=60.0,
+                )
+            )
         self.npcs = npcs
         self.npc_batch = batch
 
@@ -317,42 +371,63 @@ class FinishLine(pyglet.sprite.Sprite):
 
     def update(self, dt):
         if self.moving:
-            self.y -= player.v * dt
-            if self.y < -10:
-                self.moving = False
-                self.y = height + 10
+            dy = player.v * dt
+            self.y -= dy
+            next_map_cue.y -= dy
+            if self.y < player.y:
+                self.reset()
+
         else:
             if route[map_idx].length - player.absolute_y < height:
                 self.moving = True
+
+    def reset(self):
+        self.moving = False
+        self.y = height + 10
+        next_map_cue.y = height + 20
 
 
 """ GRAPHICS SETUP """
 # (nearly) fullscreen
 width, height = 1920, 1040
-window = pyglet.window.Window(width=width, height=height)
+window = pyglet.window.Window(width=width, height=height, caption="跑饭 - Lunchrush")
+window.set_icon(pyglet.image.load('./res/icon.png'))
 lane_width = 100
 # solid white bg
-white = pyglet.image.SolidColorImagePattern(
-    (255, 255, 255, 255)).create_image(width, height)
+white = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(
+    width, height
+)
 
-pyglet.resource.path = ['./res']
+pyglet.resource.path = ["./res"]
 pyglet.resource.reindex()
+
+lane_sep_img = pyglet.image.load("./res/track-separator.png")
+
 
 """ SCORING SETUP """
 # displayed and updated over time
 time = [12, 0, 0]
 
 time_label = pyglet.text.Label(
-    text=format_time(time), x=20, y=(height - 68), color=(0, 0, 0, 255), font_size=48)
+    text=format_time(time), x=20, y=(height - 68), color=(0, 0, 0, 255), font_size=48
+)
 
 vlabel = pyglet.text.Label(
-    text='v=0.00', x=20, y=(height - 120), color=(0, 0, 0, 255), font_size=32)
+    text="v=0.00", x=20, y=(height - 120), color=(0, 0, 0, 255), font_size=32
+)
 
 ylabel = pyglet.text.Label(
-    text='y=0.00/0', x=20, y=(height - 160), color=(0, 0, 0, 255), font_size=32)
+    text="y=0.00/0", x=20, y=(height - 160), color=(0, 0, 0, 255), font_size=32
+)
 
 maplabel = pyglet.text.Label(
-    text='map: ---', x=20, y=(height - 200), color=(0, 0, 0, 255), font_size=32)
+    text="你在： ---",
+    x=20,
+    y=(height - (220 if DEBUG else 120)),
+    color=(0, 0, 0, 255),
+    font_name="Noto Sans CJK SC",
+    font_size=32,
+)
 
 """ MAPS INITIATION """
 # load all maps listed in efzmaps.csv
@@ -361,27 +436,38 @@ raw_maps = read(width, lane_width)  # read() provided by ./readmaps.py
 maps = {}
 for map_key in raw_maps:
     map_dict = raw_maps[map_key]
-    maps[map_key] = Map(name=map_key, display_name=map_dict['display_name'],
-                        lanes=map_dict['lanes'], length=map_dict['length'],
-                        npc_density=map_dict['npc_density'], exits=map_dict['exits'])
+    maps[map_key] = Map(
+        name=map_key,
+        display_name=map_dict["display_name"],
+        lanes=map_dict["lanes"],
+        length=map_dict["length"],
+        npc_density=map_dict["npc_density"],
+        exits=map_dict["exits"],
+        minimap_image_path=map_dict["minimap_image"],
+    )
 
-route = [maps['n303w']]
+route = [maps["s104w"]]
 map_idx = 0
+next_map_cue = pyglet.text.Label(
+    x=width / 2,
+    y=(height + 20),
+    color=(248, 101, 57, 255),
+    font_name="Noto Sans CJK SC",
+    font_size=32,
+    anchor_x="center",
+)
 
-finish_line = FinishLine(img=center_image(
-    pyglet.resource.image('finish_line.png')))
+finish_line = FinishLine(img=center_image(pyglet.resource.image("finish_line.png")))
 
 """ PLAYER INITIATION """
-player = Player('cafeteria1', img=center_image(
-    pyglet.resource.image('player/megan.png')))
+player = Player(img=center_image(pyglet.resource.image("player/megan.png")))
 
-""" START GRAPHICS """
+
 @window.event
 def on_draw():
     # cover window with white bg
     # equivalent of clearing canvas
     white.blit(0, 0)
-
     # update time label, unless reached cafeteria
     if not player.reached_cafeteria:
         time_label.text = format_time(time)
@@ -389,18 +475,26 @@ def on_draw():
     maplabel.draw()
 
     if DEBUG:
-        vlabel.text = f'v={player.v: .2f}'
+        vlabel.text = f"v={player.v: .2f}"
         vlabel.draw()
-        ylabel.text = f'y={player.absolute_y: .2f}/{player.map.length}'
+        ylabel.text = f"y={player.absolute_y: .2f}/{player.map.length}"
         ylabel.draw()
 
+    for x in calc_lane_separators_x(width, lane_width, player.map.lanes):
+        lane_sep_img.blit(x, 0)
+
     finish_line.draw()
+    next_map_cue.draw()
     route[map_idx].npc_batch.draw()
 
     if player.show_choices:
         player.exit_choices_labels_batch.draw()
 
+    player.minimap.blit(100, 500 if DEBUG else 600)
     player.draw()
+
+
+""" EVENTS """
 
 
 @window.event
@@ -419,6 +513,8 @@ def on_key_press(symbol, mods):
         player.alter_exit(2)
 
 
+""" SERIAL """
+"""
 prev_pin_states = {
     'pedal_l': 0,
     'pedal_r': 0
@@ -427,20 +523,15 @@ prev_pin_states = {
     # 'panel_a': 0,
     # 'panel_b': 0
 }
-
 foot_down = 0  # the foot stamped down
-
 def react_to_serial(_):
     # access values read and stored in `readserial.py`
     global prev_pin_states
     global foot_down
-
     res_pin_states = view_value()
-
     # pedal_[lr]: type int. interpreted as bools.
     pedal_l = res_pin_states['pedal_l']
     pedal_r = res_pin_states['pedal_r']
-
     # player.step() criteria:
     # L0R1 -> L1R0 or L1R0 -> L0R1
     res_foot_down = foot_down  # default
@@ -448,12 +539,11 @@ def react_to_serial(_):
         res_foot_down = 0
     elif (not pedal_l) and pedal_r:
         res_foot_down = 1
-
     if not res_foot_down == foot_down:
         player.step()
         foot_down = res_foot_down
-
     prev_pin_states = res_pin_states
+"""
 
 
 def refresh_NPCs(dt):
@@ -477,7 +567,7 @@ def clocktick(_):
 
 
 pyglet.clock.schedule_interval(clocktick, 1)
-pyglet.clock.schedule_interval(react_to_serial, 0.02)
+# pyglet.clock.schedule_interval(react_to_serial, 0.02)
 pyglet.clock.schedule_interval(refresh_NPCs, 0.05)
 pyglet.clock.schedule_interval(NPC_react, 0.5)
 pyglet.clock.schedule_interval(player.update, 0.05)
