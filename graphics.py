@@ -18,7 +18,7 @@ keys = pyglet.window.key
 DEBUG = False
 
 """ ALL THE CLASSES """
-base_velocity = 120
+base_velocity = 120 if DEBUG else 36
 
 
 class Player(pyglet.sprite.Sprite):
