@@ -1,108 +1,114 @@
 name,display_name,lanes,length,npc_density,bonus_density,exits,minimap_image
-i1,信息 1 楼走廊,5,50,0.003,0.002,ilb1;nw.1-2,corridors/info
-i2,信息 2 楼走廊,5,50,0.003,0.002,nw.2-1;nw.2-3,corridors/info
-i3,信息 3 楼走廊,5,50,0.003,0.002,ilb3;nw.3-2,corridors/info
-i4,信息 4 楼走廊,5,50,0.003,0.002,nw.4-3,corridors/info
-s101w,南 1 楼,3,8,0.003,0.002,i1;sw.1-2,corridors/sw
-s102w,南 1 楼,3,21,0.003,0.002,i1;sw.1-2,corridors/sw
-s103w,南 1 楼,3,34,0.003,0.002,i1;sw.1-2,corridors/sw
-s104w,南 1 楼,3,47,0.003,0.002,i1;sw.1-2,corridors/sw
-s101e,南 1 楼,3,47,0.003,0.002,se.1-2;pebbleroad_main,corridors/se
-s102e,南 1 楼,3,34,0.003,0.002,se.1-2,corridors/se
-s103e,南 1 楼,3,21,0.003,0.002,se.1-2,corridors/se
-s104e,南 1 楼,3,8,0.003,0.002,se.1-2,corridors/se
-s201w,南 2 楼,3,8,0.003,0.002,i2;sw.2-1;sw.2-3,corridors/sw
-s202w,南 2 楼,3,21,0.003,0.002,i2;sw.2-1;sw.2-3,corridors/sw
-s203w,南 2 楼,3,34,0.003,0.002,i2;sw.2-1;sw.2-3,corridors/sw
-s204w,南 2 楼,3,47,0.003,0.002,i2;sw.2-1;sw.2-3,corridors/sw
-s201e,南 2 楼,3,47,0.003,0.002,se.2-1;se.2-3,corridors/se
-s202e,南 2 楼,3,34,0.003,0.002,se.2-1;se.2-3,corridors/se
-s203e,南 2 楼,3,21,0.003,0.002,se.2-1;se.2-3,corridors/se
-s204e,南 2 楼,3,8,0.003,0.002,se.2-1;se.2-3,corridors/se
-s301w,南 3 楼,3,8,0.003,0.002,i3;sw.3-2,corridors/sw
-s302w,南 3 楼,3,21,0.003,0.002,i3;sw.3-2,corridors/sw
-s303w,南 3 楼,3,34,0.003,0.002,i3;sw.3-2,corridors/sw
-s304w,南 3 楼,3,47,0.003,0.002,i3;sw.3-2,corridors/sw
-s301e,南 3 楼,3,47,0.003,0.002,se.3-2,corridors/se
-s302e,南 3 楼,3,34,0.003,0.002,se.3-2,corridors/se
-s303e,南 3 楼,3,21,0.003,0.002,se.3-2,corridors/se
-s304e,南 3 楼,3,8,0.003,0.002,se.3-2,corridors/se
-s401w,南 4 楼,3,8,0.003,0.002,i4;sw.4-3,corridors/sw
-s402w,南 4 楼,3,21,0.003,0.002,i4;sw.4-3,corridors/sw
-s403w,南 4 楼,3,34,0.003,0.002,i4;sw.4-3,corridors/sw
-s404w,南 4 楼,3,47,0.003,0.002,i4;sw.4-3,corridors/sw
-s401e,南 4 楼,3,47,0.003,0.002,se.4-3,corridors/se
-s402e,南 4 楼,3,34,0.003,0.002,se.4-3,corridors/se
-s403e,南 4 楼,3,21,0.003,0.002,se.4-3,corridors/se
-s404e,南 4 楼,3,8,0.003,0.002,se.4-3,corridors/se
-n1w,北 1 楼,3,76,0.003,0.002,nw.1-2;ilb1,corridors/nw
-n102w,北 1 楼,3,18,0.003,0.002,nw.1-2;ilb1,corridors/nw
-n103w,北 1 楼,3,31,0.003,0.002,nw.1-2;ilb1,corridors/nw
-n104w,北 1 楼,3,44,0.003,0.002,nw.1-2;ilb1,corridors/nw
-n105w,北 1 楼,3,57,0.003,0.002,nw.1-2;ilb1,corridors/nw
-n102e,北 1 楼,3,47,0.003,0.002,ne.1-2;takeoff,corridors/ne
-n103e,北 1 楼,3,34,0.003,0.002,ne.1-2;takeoff,corridors/ne
-n104e,北 1 楼,3,21,0.003,0.002,ne.1-2;takeoff,corridors/ne
-n105e,北 1 楼,3,8,0.003,0.002,ne.1-2;takeoff,corridors/ne
-n202w,北 2 楼,3,18,0.003,0.002,nw.2-1;nw.2-3,corridors/nw
-n203w,北 2 楼,3,31,0.003,0.002,nw.2-1;nw.2-3,corridors/nw
-n204w,北 2 楼,3,44,0.003,0.002,nw.2-1;nw.2-3,corridors/nw
-n205w,北 2 楼,3,57,0.003,0.002,nw.2-1;nw.2-3,corridors/nw
-n202e,北 2 楼,3,47,0.003,0.002,ne.2-1;ne2-3,corridors/ne
-n203e,北 2 楼,3,34,0.003,0.002,ne.2-1;ne2-3,corridors/ne
-n204e,北 2 楼,3,21,0.003,0.002,ne.2-1;ne2-3,corridors/ne
-n205e,北 2 楼,3,8,0.003,0.002,ne.2-1;ne2-3,corridors/ne
-n302w,北 3 楼,3,18,0.003,0.002,ilb3;nw.3-2,corridors/nw
-n303w,北 3 楼,3,31,0.003,0.002,ilb3;nw.3-2,corridors/nw
-n304w,北 3 楼,3,44,0.003,0.002,ilb3;nw.3-2,corridors/nw
-n305w,北 3 楼,3,57,0.003,0.002,ilb3;nw.3-2,corridors/nw
-n302e,北 3 楼,3,47,0.003,0.002,ne.3-2,corridors/ne
-n303e,北 3 楼,3,34,0.003,0.002,ne.3-2,corridors/ne
-n304e,北 3 楼,3,21,0.003,0.002,ne.3-2,corridors/ne
-n305e,北 3 楼,3,8,0.003,0.002,ne.3-2,corridors/ne
-n402w,北 4 楼,3,18,0.003,0.002,nw.4-3,corridors/nw
-n403w,北 4 楼,3,31,0.003,0.002,nw.4-3,corridors/nw
-n404w,北 4 楼,3,44,0.003,0.002,nw.4-3,corridors/nw
-n405w,北 4 楼,3,57,0.003,0.002,nw.4-3,corridors/nw
-n402e,北 4 楼,3,47,0.003,0.002,ne.4-3,corridors/ne
-n403e,北 4 楼,3,34,0.003,0.002,ne.4-3,corridors/ne
-n404e,北 4 楼,3,21,0.003,0.002,ne.4-3,corridors/ne
-n405e,北 4 楼,3,8,0.003,0.002,ne.4-3,corridors/ne
-ilb1,风雨走廊 1 楼,6,83,0.003,0.002,l1;lb_spiral.1-2,corridors/ilb
-ilb3,风雨走廊 3 楼,6,83,0.003,0.002,l3;lb_spiral.3-2,corridors/ilb
-pebbleroad_main,鹅卵石路,1,36,0.003,0.002,pebbleroad_w;pebbleroad_e,corridors/pbr_main
-pebbleroad_w,鹅卵石路（西分支）,1,86,0.003,0.002,ilb1;nw.1-2,corridors/pbr_w
-pebbleroad_e,鹅卵石路（东分支）,1,21,0.003,0.002,n1w;ne.1-2;takeoff,corridors/pbr_e
-takeoff,腾飞广场,4,153,0.003,0.002,lb_spiral.1-2;l1,corridors/takeoff
-l1,生活 1 楼走廊,4,53,0.003,0.002,cafeteria1;honeyhut;cafeteria_stairs.1-2,corridors/lb
-l2,生活 2 楼走廊,4,53,0.003,0.002,cafeteria2;cafeteria_stairs.2-1,corridors/lb
-l3,生活 3 楼走廊,4,53,0.003,0.002,cafeteria2;cafeteria_stairs.2-1,corridors/lb
-sw.1-2,上 2 楼,2,30,0.003,0.002,i2;sw.2-3,stairs/sw
-sw.2-3,上 3 楼,2,30,0.003,0.002,i3,stairs/sw
-sw.2-1,下 1 楼,2,30,0.003,0.002,i1,stairs/sw
-sw.3-2,下 2 楼,2,30,0.003,0.002,i2;sw.2-1,stairs/sw
-sw.4-3,下 3 楼,2,30,0.003,0.002,i3;sw.3-2,stairs/sw
-se.1-2,上 2 楼,2,30,0.003,0.002,s2w;se.2-3,stairs/se
-se.2-3,上 3 楼,2,30,0.003,0.002,s3w,stairs/se
-se.2-1,下 1 楼,2,30,0.003,0.002,s1w;pebbleroad_main,stairs/se
-se.3-2,下 2 楼,2,30,0.003,0.002,s2w;se.2-1,stairs/se
-se.4-3,下 3 楼,2,30,0.003,0.002,s3w;se.3-2,stairs/se
-nw.1-2,上 2 楼,2,30,0.003,0.002,nw.2-3,stairs/nw
-nw.2-3,上 3 楼,2,30,0.003,0.002,ilb3,stairs/nw
-nw.2-1,下 1 楼,2,30,0.003,0.002,ilb1,stairs/nw
-nw.3-2,下 2 楼,2,30,0.003,0.002,nw.2-1,stairs/nw
-nw.4-3,下 3 楼,2,30,0.003,0.002,ilb3;nw.3-2,stairs/nw
-ne.1-2,上 2 楼,2,30,0.003,0.002,n2w;ne.2-3,stairs/ne
-ne.2-3,上 3 楼,2,30,0.003,0.002,n3w,stairs/ne
-ne.2-1,下 1 楼,2,30,0.003,0.002,n1w,stairs/ne
-ne.3-2,下 2 楼,2,30,0.003,0.002,n2w;ne.2-1,stairs/ne
-ne.4-3,下 3 楼,2,30,0.003,0.002,n3w;ne.3-2,stairs/ne
-lb_spiral.1-2,上 2 楼,2,24,0.003,0.002,l2;lb_spiral.2-3,stairs/lb
-lb_spiral.2-3,上 3 楼,2,24,0.003,0.002,l3,stairs/lb
-lb_spiral.3-2,下 2 楼,2,24,0.003,0.002,l2;lb_spiral.2-1,stairs/lb
-lb_spiral.2-1,下 1 楼,2,24,0.003,0.002,l1,stairs/lb
-cafeteria_stairs.1-2,上 2 楼,2,36,0.003,0.002,cafeteria2,stairs/cafeteria
-cafeteria_stairs.2-1,下 1 楼,2,36,0.003,0.002,cafeteria1;honeyhut,stairs/cafeteria
+i1,信息 1 楼走廊,5,50,0.002,0.0004,ilb1;nw.1-2,corridors/info
+i2,信息 2 楼走廊,5,50,0.002,0.0004,nw.2-1;nw.2-3,corridors/info
+i3,信息 3 楼走廊,5,50,0.002,0.0004,ilb3;nw.3-2,corridors/info
+i4,信息 4 楼走廊,5,50,0.002,0.0004,nw.4-3,corridors/info
+s1w,南 1 楼,3,66,0.001,0.0004,i1;sw.1-2,corridors/sw
+s101w,南 1 楼,3,8,0.001,0.0004,i1;sw.1-2,corridors/sw
+s102w,南 1 楼,3,21,0.001,0.0004,i1;sw.1-2,corridors/sw
+s103w,南 1 楼,3,34,0.001,0.0004,i1;sw.1-2,corridors/sw
+s104w,南 1 楼,3,47,0.001,0.0004,i1;sw.1-2,corridors/sw
+s101e,南 1 楼,3,47,0.001,0.0004,se.1-2;pebbleroad_main,corridors/se
+s102e,南 1 楼,3,34,0.001,0.0004,se.1-2,corridors/se
+s103e,南 1 楼,3,21,0.001,0.0004,se.1-2,corridors/se
+s104e,南 1 楼,3,8,0.001,0.0004,se.1-2,corridors/se
+s2w,南 2 楼,3,66,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s201w,南 2 楼,3,8,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s202w,南 2 楼,3,21,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s203w,南 2 楼,3,34,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s204w,南 2 楼,3,47,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s201e,南 2 楼,3,47,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s202e,南 2 楼,3,34,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s203e,南 2 楼,3,21,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s204e,南 2 楼,3,8,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s3w,南 3 楼,3,66,0.001,0.0004,i3;sw.3-2,corridors/sw
+s301w,南 3 楼,3,8,0.001,0.0004,i3;sw.3-2,corridors/sw
+s302w,南 3 楼,3,21,0.001,0.0004,i3;sw.3-2,corridors/sw
+s303w,南 3 楼,3,34,0.001,0.0004,i3;sw.3-2,corridors/sw
+s304w,南 3 楼,3,47,0.001,0.0004,i3;sw.3-2,corridors/sw
+s301e,南 3 楼,3,47,0.001,0.0004,se.3-2,corridors/se
+s302e,南 3 楼,3,34,0.001,0.0004,se.3-2,corridors/se
+s303e,南 3 楼,3,21,0.001,0.0004,se.3-2,corridors/se
+s304e,南 3 楼,3,8,0.001,0.0004,se.3-2,corridors/se
+s401w,南 4 楼,3,8,0.001,0.0004,i4;sw.4-3,corridors/sw
+s402w,南 4 楼,3,21,0.001,0.0004,i4;sw.4-3,corridors/sw
+s403w,南 4 楼,3,34,0.001,0.0004,i4;sw.4-3,corridors/sw
+s404w,南 4 楼,3,47,0.001,0.0004,i4;sw.4-3,corridors/sw
+s401e,南 4 楼,3,47,0.001,0.0004,se.4-3,corridors/se
+s402e,南 4 楼,3,34,0.001,0.0004,se.4-3,corridors/se
+s403e,南 4 楼,3,21,0.001,0.0004,se.4-3,corridors/se
+s404e,南 4 楼,3,8,0.001,0.0004,se.4-3,corridors/se
+n1w,北 1 楼,3,76,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n102w,北 1 楼,3,18,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n103w,北 1 楼,3,31,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n104w,北 1 楼,3,44,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n105w,北 1 楼,3,57,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n102e,北 1 楼,3,47,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n103e,北 1 楼,3,34,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n104e,北 1 楼,3,21,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n105e,北 1 楼,3,8,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n1w,北 1 楼,3,76,0.001,0.0004,nw.1-2;ilb1,corridors/nw
+n202w,北 2 楼,3,18,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n203w,北 2 楼,3,31,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n204w,北 2 楼,3,44,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n205w,北 2 楼,3,57,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n202e,北 2 楼,3,47,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n203e,北 2 楼,3,34,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n204e,北 2 楼,3,21,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n205e,北 2 楼,3,8,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n2w,北 2 楼,3,76,0.001,0.0004,ne.2-1;ne.2-3,corridors/nw
+n302w,北 3 楼,3,18,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n303w,北 3 楼,3,31,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n304w,北 3 楼,3,44,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n305w,北 3 楼,3,57,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n302e,北 3 楼,3,47,0.001,0.0004,ne.3-2,corridors/ne
+n303e,北 3 楼,3,34,0.001,0.0004,ne.3-2,corridors/ne
+n304e,北 3 楼,3,21,0.001,0.0004,ne.3-2,corridors/ne
+n305e,北 3 楼,3,8,0.001,0.0004,ne.3-2,corridors/ne
+n3w,北 3 楼,3,76,0.001,0.0004,ne.3-2,corridors/nw
+n402w,北 4 楼,3,18,0.001,0.0004,nw.4-3,corridors/nw
+n403w,北 4 楼,3,31,0.001,0.0004,nw.4-3,corridors/nw
+n404w,北 4 楼,3,44,0.001,0.0004,nw.4-3,corridors/nw
+n405w,北 4 楼,3,57,0.001,0.0004,nw.4-3,corridors/nw
+n402e,北 4 楼,3,47,0.001,0.0004,ne.4-3,corridors/ne
+n403e,北 4 楼,3,34,0.001,0.0004,ne.4-3,corridors/ne
+n404e,北 4 楼,3,21,0.001,0.0004,ne.4-3,corridors/ne
+n405e,北 4 楼,3,8,0.001,0.0004,ne.4-3,corridors/ne
+ilb1,风雨走廊 1 楼,6,83,0.003,0.0004,l1;lb_spiral.1-2,corridors/ilb
+ilb3,风雨走廊 3 楼,6,83,0.003,0.0004,l3;lb_spiral.3-2,corridors/ilb
+pebbleroad_main,鹅卵石路,1,36,0.0005,0.0004,pebbleroad_w;pebbleroad_e,corridors/pbr_main
+pebbleroad_w,向左走（西）,1,86,0.0003,0.0004,ilb1;nw.1-2,corridors/pbr_w
+pebbleroad_e,向右走（东）,1,21,0.0002,0.0004,n1w;ne.1-2;takeoff,corridors/pbr_e
+takeoff,腾飞广场,4,153,0.0005,0.0004,lb_spiral.1-2;l1,corridors/takeoff
+l1,生活 1 楼走廊,4,53,0.005,0.0004,cafeteria1;honeyhut;cafeteria_stairs.1-2,corridors/lb
+l2,生活 2 楼走廊,4,53,0.005,0.0004,cafeteria2;cafeteria_stairs.2-1,corridors/lb
+l3,生活 3 楼走廊,4,53,0.005,0.0004,cafeteria2;cafeteria_stairs.2-1,corridors/lb
+sw.1-2,上 南 2 楼,2,30,0.001,0.0004,i2;sw.2-3,stairs/sw
+sw.2-3,上 南 3 楼,2,30,0.001,0.0004,i3,stairs/sw
+sw.2-1,下 南 1 楼,2,30,0.001,0.0004,i1,stairs/sw
+sw.3-2,下 南 2 楼,2,30,0.001,0.0004,i2;sw.2-1,stairs/sw
+sw.4-3,下 南 3 楼,2,30,0.001,0.0004,i3;sw.3-2,stairs/sw
+se.1-2,上 南 2 楼,2,30,0.001,0.0004,s2w;se.2-3,stairs/se
+se.2-3,上 南 3 楼,2,30,0.001,0.0004,s3w,stairs/se
+se.2-1,下 南 1 楼,2,30,0.001,0.0004,s1w;pebbleroad_main,stairs/se
+se.3-2,下 南 2 楼,2,30,0.001,0.0004,s2w;se.2-1,stairs/se
+se.4-3,下 南 3 楼,2,30,0.001,0.0004,s3w;se.3-2,stairs/se
+nw.1-2,上 北 2 楼,2,30,0.001,0.0004,nw.2-3,stairs/nw
+nw.2-3,上 北 3 楼,2,30,0.001,0.0004,ilb3,stairs/nw
+nw.2-1,下 北 1 楼,2,30,0.001,0.0004,ilb1,stairs/nw
+nw.3-2,下 北 2 楼,2,30,0.001,0.0004,nw.2-1,stairs/nw
+nw.4-3,下 北 3 楼,2,30,0.001,0.0004,ilb3;nw.3-2,stairs/nw
+ne.1-2,上 北 2 楼,2,30,0.001,0.0004,n2w;ne.2-3,stairs/ne
+ne.2-3,上 北 3 楼,2,30,0.001,0.0004,n3w,stairs/ne
+ne.2-1,下 北 1 楼,2,30,0.001,0.0004,n1w;takeoff,stairs/ne
+ne.3-2,下 北 2 楼,2,30,0.001,0.0004,n2w;ne.2-1,stairs/ne
+ne.4-3,下 北 3 楼,2,30,0.001,0.0004,n3w;ne.3-2,stairs/ne
+lb_spiral.1-2,上 生活 2 楼,2,24,0.001,0.0004,l2;lb_spiral.2-3,stairs/lb
+lb_spiral.2-3,上 生活 3 楼,2,24,0.001,0.0004,l3,stairs/lb
+lb_spiral.3-2,下 生活 2 楼,2,24,0.001,0.0004,l2;lb_spiral.2-1,stairs/lb
+lb_spiral.2-1,下 生活 1 楼,2,24,0.001,0.0004,l1,stairs/lb
+cafeteria_stairs.1-2,上 食堂 2 楼,2,36,0.002,0.0004,cafeteria2,stairs/cafeteria
+cafeteria_stairs.2-1,下 食堂 1 楼,2,36,0.002,0.0004,cafeteria1;honeyhut,stairs/cafeteria
 cafeteria1,一楼食堂,1,0,0,0,,
 cafeteria2,二楼食堂,1,0,0,0,,
 honeyhut,甜蜜小屋,1,0,0,0,,

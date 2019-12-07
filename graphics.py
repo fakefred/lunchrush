@@ -2,7 +2,7 @@
 import pyglet
 from readmaps import read
 
-# from readserial import view_value
+from readserial import view_value, read_thread
 from utils import (
     dualdigit,
     format_time,
@@ -10,12 +10,19 @@ from utils import (
     calc_lanes_x,
     calc_selecs_x,
     calc_lane_separators_x,
+    BONUS_FILENAMES,
+    make_label,
 )
-from random import random, randint
+from random import random, randint, choice
+from os import listdir
 
 keys = pyglet.window.key
 
-DEBUG = False
+npc_images = [file for file in listdir("./res/player/") if file.endswith(".png")]
+
+CHOICE_BUTTONS_Y_AXES = (200, 150, 100)
+
+DEBUG = True
 
 """ ALL THE CLASSES """
 base_velocity = 120 if DEBUG else 36
@@ -27,6 +34,7 @@ class Player(pyglet.sprite.Sprite):
     # switches lanes; does not move vertically on the screen
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.is_player = True
         self.initiating = True
         self.y = 120
         # start from #0
@@ -60,6 +68,9 @@ class Player(pyglet.sprite.Sprite):
             # unless there's no exit, assume default exit
             route.append(maps[self.map.exits[0]])
 
+        self.bulldozer_mode = False
+        self.people_killed = 0
+
     @property
     def lane(self):
         return self._lane
@@ -92,7 +103,7 @@ class Player(pyglet.sprite.Sprite):
                 self.v = max(0.0, self.init_v - 20 * self.delta_t ** 2)
             # move self on map
             self.absolute_y += self.v * dt
-            self.check_if_hit_npc()
+            self.check_if_hit_npc_or_bonus()
             self.check_if_is_approaching_EOM()
             if self.map_finished():
                 self.next_map()
@@ -108,6 +119,7 @@ class Player(pyglet.sprite.Sprite):
 
         self.approaching_EOM = False
         self.show_choices = False
+        self.bulldozer_mode = False
 
         if map_idx < len(route) - 1:  # if there's another map following in `route`
             total_lanes_on_prev_map = self.map.lanes
@@ -166,21 +178,18 @@ class Player(pyglet.sprite.Sprite):
     def generate_exit_choices_labels(self):
         self.exit_choices_labels = []
         self.exit_choices_labels_batch = pyglet.graphics.Batch()
-        x_axis = calc_selecs_x(width, 25, 200, len(self.exit_choices))
         exit_x_assignment_idx = 0
         for exit in self.exit_choices:
             self.exit_choices_labels.append(
-                pyglet.text.Label(
+                make_label(
                     text=maps[exit].display_name,
-                    x=x_axis[exit_x_assignment_idx],
-                    y=200,
+                    x=width - 300,
+                    y=CHOICE_BUTTONS_Y_AXES[exit_x_assignment_idx],
                     width=300,
-                    height=100,
-                    align="center",
-                    color=(0, 0, 0, 255),
-                    anchor_x="center",
-                    font_size=28,
-                    font_name="Noto Sans CJK SC",
+                    height=30,
+                    align="left",
+                    anchor_y="center",
+                    size=28,
                     batch=self.exit_choices_labels_batch,
                 )
             )
@@ -198,21 +207,34 @@ class Player(pyglet.sprite.Sprite):
             self.exit_choices_labels[idx].color = (248, 101, 57, 255)
             next_map_cue.text = "下一关：" + maps[self.map.exits[idx]].display_name
 
-    def check_if_hit_npc(self):
+    def check_if_hit_npc_or_bonus(self):
         for npc in self.map.npcs:
             if self.lane == npc.lane and 0 < npc.y - self.y < 45:
-                npc.on_hit(self)
+                if self.bulldozer_mode:
+                    if npc.running:  # if they're still alive
+                        npc.image = center_image(
+                            pyglet.resource.image("bloodstain.png")
+                        )
+                        npc.running = False
+                        npc.v = 0
+                        self.people_killed += 1
+                else:
+                    npc.on_hit(self)
+        for bonus in self.map.bonuses:
+            if self.lane == bonus.lane and 0 < bonus.y - self.y < 45:
+                bonus.on_hit(self)
 
 
 class NPC(pyglet.sprite.Sprite):
     # NPC: non-player characters
     # inherits pyglet.sprite.Sprite
-    # includes other students, faculty, random bonuses (aka boni)
-    # does not switch lanes
+    # includes other students and faculty
     def __init__(self, track, lane=0, v=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.is_player = False
         self.map = track
         self.initiating = True
+        self.running = True
         self.lane = lane
         # init_v is static
         self.init_v = v
@@ -221,10 +243,11 @@ class NPC(pyglet.sprite.Sprite):
 
     def update(self, dt):
         # velocity control
-        if self.v - self.init_v < -10:
-            self.v += self.acc
-        elif self.v - self.init_v > 10:
-            self.v -= self.acc
+        if self.running:
+            if self.v - self.init_v < -10:
+                self.v += self.acc
+            elif self.v - self.init_v > 10:
+                self.v -= self.acc
 
         # move on each frame refresh
         self.y += (self.v - player.v) * dt
@@ -260,64 +283,97 @@ class NPC(pyglet.sprite.Sprite):
         character.v = 0
 
     def react(self, _):
-        switch_threshold = 1
-        for npc in self.map.npcs:
-            if npc.lane == self.lane and npc is not self:
-                if (0 < self.y - npc.y < 100 and self.v < npc.v) or (
-                    -100 < self.y - npc.y < 0 and self.v > npc.v
-                ):
-                    # going to hit from the (back) or (front)
-                    switch_threshold -= 0.005
-
-                if abs(npc.v - self.v) < 50:
-                    # *already* hit
-                    npc.on_hit(self)
-                    # additionally reduce thres
-                    switch_threshold -= 0.005
-
-        if (
-            self.lane == player.lane
-            and 0 < self.y - player.y < 100
-            and self.v < player.v
-        ):
-            # player approaching from back
-            switch_threshold -= 0.02
-            self.v += 10
-        elif (
-            self.lane == player.lane
-            and -100 < self.y - player.y < 0
-            and self.v > player.v
-        ):
-            # ... from front
-            switch_threshold -= 0.02
-            self.v -= 10
-
-        if abs(player.v - self.v) < 50:
-            switch_threshold -= 0.04
-
-        if random() > switch_threshold:
-            # peek for transferable lanes
-            left_ok = True if self.lane != 0 else False
-            right_ok = True if self.lane < self.map.lanes else False
+        if self.running:
+            switch_threshold = 1
             for npc in self.map.npcs:
-                if (0 < self.y - npc.y < 80 and self.v < npc.v) or (
-                    -80 < self.y - npc.y < 0 and self.v > npc.v
-                ):
-                    # approaching self from either direction
-                    if left_ok and npc.lane == self.lane - 1:
-                        left_ok = False
-                    elif right_ok and npc.lane == self.lane + 1:
-                        right_ok = False
+                if npc.lane == self.lane and npc is not self:
+                    if (0 < self.y - npc.y < 100 and self.v < npc.v) or (
+                        -100 < self.y - npc.y < 0 and self.v > npc.v
+                    ):
+                        # going to hit from the (back) or (front)
+                        switch_threshold -= 0.005
 
-            if left_ok and right_ok:
-                if random() > 0.5:
+                    if abs(npc.v - self.v) < 50:
+                        # *already* hit
+                        npc.on_hit(self)
+                        # additionally reduce thres
+                        switch_threshold -= 0.005
+
+            if (
+                self.lane == player.lane
+                and 0 < self.y - player.y < 100
+                and self.v < player.v
+            ):
+                # player approaching from back
+                switch_threshold -= 0.02
+                self.v += 10
+            elif (
+                self.lane == player.lane
+                and -100 < self.y - player.y < 0
+                and self.v > player.v
+            ):
+                # ... from front
+                switch_threshold -= 0.02
+                self.v -= 10
+
+            if abs(player.v - self.v) < 50:
+                switch_threshold -= 0.04
+
+            if random() > switch_threshold:
+                # peek for transferable lanes
+                left_ok = True if self.lane != 0 else False
+                right_ok = True if self.lane < self.map.lanes else False
+                for npc in self.map.npcs:
+                    if (0 < self.y - npc.y < 80 and self.v < npc.v) or (
+                        -80 < self.y - npc.y < 0 and self.v > npc.v
+                    ):
+                        # approaching self from either direction
+                        if left_ok and npc.lane == self.lane - 1:
+                            left_ok = False
+                        elif right_ok and npc.lane == self.lane + 1:
+                            right_ok = False
+
+                if left_ok and right_ok:
+                    if random() > 0.5:
+                        self.left()
+                    else:
+                        self.right()
+                elif left_ok:
                     self.left()
-                else:
+                elif right_ok:
                     self.right()
-            elif left_ok:
-                self.left()
-            elif right_ok:
-                self.right()
+
+
+class Bonus(pyglet.sprite.Sprite):
+    # Bonus: static object with various outcomes
+    # not all positive
+    # inherits pyglet.sprite.Sprite
+    # does not switch lanes
+    def __init__(self, bonus_type, lane=0, lanes_x=(), *args, **kwargs):
+        self.type = bonus_type
+        super().__init__(
+            img=center_image(
+                pyglet.resource.image("bonus/" + BONUS_FILENAMES[bonus_type])
+            ),
+            *args,
+            **kwargs,
+        )
+        self.lane = lane
+        self.x = lanes_x[lane]
+
+    def update(self, dt):
+        self.y -= player.v * dt
+
+    def on_hit(self, character):
+        if self.type == "slip_left":
+            character.left()
+        elif self.type == "slip_right":
+            character.right()
+        elif self.type == "accelerate":
+            character.v *= 1.5
+        elif self.type == "bulldozer":
+            if character.is_player:
+                character.bulldozer_mode = True
 
 
 class Map:
@@ -328,6 +384,7 @@ class Map:
         lanes=1,
         length=10000,
         npc_density=0.0,
+        bonus_density=0.0,
         exits=[],
         minimap_image_path="",
     ):
@@ -339,6 +396,8 @@ class Map:
         # npc_density: number of npcs / length
         self.npc_density = npc_density
         self.initiate_npcs()
+        self.bonus_density = bonus_density
+        self.initiate_bonuses()
         self.exits = exits
         self.minimap_image_path = minimap_image_path
 
@@ -350,16 +409,34 @@ class Map:
             # NPCs that have been running midway since game started
             npcs.append(
                 NPC(
-                    img=center_image(pyglet.resource.image("player/blackhat.png")),
+                    img=center_image(
+                        pyglet.resource.image(f"player/{choice(npc_images)}")
+                    ),
                     track=self,
                     lane=randint(0, self.lanes - 1),
                     y=randint(-self.length / 4, self.length),
                     batch=batch,
-                    v=60.0,
+                    v=40 + random() * 40,
                 )
             )
         self.npcs = npcs
         self.npc_batch = batch
+
+    def initiate_bonuses(self):
+        bonuses = []
+        batch = pyglet.graphics.Batch()
+        for _ in range(round(self.bonus_density * self.length * self.lanes)):
+            bonuses.append(
+                Bonus(
+                    choice(list(BONUS_FILENAMES)),
+                    lane=randint(0, self.lanes - 1),
+                    lanes_x=self.lanes_x,
+                    y=randint(0, self.length),
+                    batch=batch,
+                )
+            )
+        self.bonuses = bonuses
+        self.bonus_batch = batch
 
 
 class FinishLine(pyglet.sprite.Sprite):
@@ -391,7 +468,7 @@ class FinishLine(pyglet.sprite.Sprite):
 # (nearly) fullscreen
 width, height = 1920, 1040
 window = pyglet.window.Window(width=width, height=height, caption="跑饭 - Lunchrush")
-window.set_icon(pyglet.image.load('./res/icon.png'))
+window.set_icon(pyglet.image.load("./res/icon.png"))
 lane_width = 100
 # solid white bg
 white = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(
@@ -403,35 +480,35 @@ pyglet.resource.reindex()
 
 lane_sep_img = pyglet.image.load("./res/track-separator.png")
 
+# button images beside choice labels to indicate player which button(s) to push
+button_imgs = {}
+for name in ("red", "yellow", "both"):
+    button_imgs[name] = pyglet.image.load(f"./res/buttons/{name}.png")
+    button_imgs[name].anchor_y = 40
 
 """ SCORING SETUP """
 # displayed and updated over time
 time = [12, 0, 0]
 
-time_label = pyglet.text.Label(
-    text=format_time(time), x=20, y=(height - 68), color=(0, 0, 0, 255), font_size=48
+time_label = make_label(text=format_time(time), x=20, y=(height - 68), size=48)
+
+vlabel = make_label(text="v=0.00", x=20, y=(height - 120), size=32)
+
+ylabel = make_label(text="y=0.00/0", x=20, y=(height - 160), size=32)
+
+maplabel = make_label(
+    text="你在： ---", x=20, y=(height - (220 if DEBUG else 120)), size=32,
 )
 
-vlabel = pyglet.text.Label(
-    text="v=0.00", x=20, y=(height - 120), color=(0, 0, 0, 255), font_size=32
-)
-
-ylabel = pyglet.text.Label(
-    text="y=0.00/0", x=20, y=(height - 160), color=(0, 0, 0, 255), font_size=32
-)
-
-maplabel = pyglet.text.Label(
-    text="你在： ---",
-    x=20,
-    y=(height - (220 if DEBUG else 120)),
-    color=(0, 0, 0, 255),
-    font_name="Noto Sans CJK SC",
-    font_size=32,
+bulldozer_label = make_label(text="您已进入推土机模式", x=width - 300, y=360)
+people_killed_label_template = lambda n_killed: f"已杀害 {n_killed} 人"
+people_killed_label = make_label(
+    text=people_killed_label_template(0), x=width - 300, y=320,
 )
 
 """ MAPS INITIATION """
 # load all maps listed in efzmaps.csv
-# TODO: dynamic loading under poor performance
+# TODO: dynamic loading for less RAM (not necessary for now)
 raw_maps = read(width, lane_width)  # read() provided by ./readmaps.py
 maps = {}
 for map_key in raw_maps:
@@ -442,11 +519,12 @@ for map_key in raw_maps:
         lanes=map_dict["lanes"],
         length=map_dict["length"],
         npc_density=map_dict["npc_density"],
+        bonus_density=map_dict["bonus_density"],
         exits=map_dict["exits"],
         minimap_image_path=map_dict["minimap_image"],
     )
 
-route = [maps["s104w"]]
+route = [maps["l1"]]
 map_idx = 0
 next_map_cue = pyglet.text.Label(
     x=width / 2,
@@ -474,6 +552,13 @@ def on_draw():
     time_label.draw()
     maplabel.draw()
 
+    if player.bulldozer_mode:
+        bulldozer_label.draw()
+        people_killed_label.text = people_killed_label_template(player.people_killed)
+        people_killed_label.draw()
+    elif player.reached_cafeteria:
+        people_killed_label.draw()
+
     if DEBUG:
         vlabel.text = f"v={player.v: .2f}"
         vlabel.draw()
@@ -486,9 +571,15 @@ def on_draw():
     finish_line.draw()
     next_map_cue.draw()
     route[map_idx].npc_batch.draw()
+    route[map_idx].bonus_batch.draw()
 
     if player.show_choices:
         player.exit_choices_labels_batch.draw()
+        button_x_axis = width - 380
+        button_imgs["red"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[0])
+        button_imgs["yellow"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[1])
+        if len(player.exit_choices) == 3:
+            button_imgs["both"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[2])
 
     player.minimap.blit(100, 500 if DEBUG else 600)
     player.draw()
@@ -514,24 +605,27 @@ def on_key_press(symbol, mods):
 
 
 """ SERIAL """
-"""
-prev_pin_states = {
-    'pedal_l': 0,
-    'pedal_r': 0
-    # 'panel_l': 0,
-    # 'panel_r': 0,
-    # 'panel_a': 0,
-    # 'panel_b': 0
+pps = {  # previous pin values
+    "pedal_l": 0,
+    "pedal_r": 0,
+    'panel_l': 0,  # panel_[lr]: green button 60mm in diameter
+    'panel_r': 0,
+    'panel_a': 0,  # red button 30mm
+    'panel_b': 0   # yellow button 30mm
 }
 foot_down = 0  # the foot stamped down
+
+
 def react_to_serial(_):
     # access values read and stored in `readserial.py`
-    global prev_pin_states
+    global pps
     global foot_down
-    res_pin_states = view_value()
+    rps = view_value() # response pin values
+    # renamed pin value variables to keep it short
+    # just remember pps is old data and rps is new
     # pedal_[lr]: type int. interpreted as bools.
-    pedal_l = res_pin_states['pedal_l']
-    pedal_r = res_pin_states['pedal_r']
+    pedal_l = rps["pedal_l"] 
+    pedal_r = rps["pedal_r"] 
     # player.step() criteria:
     # L0R1 -> L1R0 or L1R0 -> L0R1
     res_foot_down = foot_down  # default
@@ -542,13 +636,35 @@ def react_to_serial(_):
     if not res_foot_down == foot_down:
         player.step()
         foot_down = res_foot_down
-    prev_pin_states = res_pin_states
-"""
+    
+    # steering
+    if not pps['panel_l'] and rps['panel_l']: 
+        player.left()
+    elif not pps['panel_r'] and rps['panel_r']: 
+        player.right()
+
+    # decision-making
+    if not (pps['panel_a'] and pps['panel_b']):
+        # if player was not pushing down both buttons on prev read
+        # prevents non-simultaneous button release
+        if not pps['panel_a'] and rps['panel_a'] and not rps['panel_b']: # red
+            player.alter_exit(0)
+        elif not pps['panel_b'] and rps['panel_b'] and not rps['panel_a']: # yellow
+            player.alter_exit(1)
+        elif rps['panel_a'] and rps['panel_b']: # both
+            player.alter_exit(2)
+
+    pps = rps 
 
 
 def refresh_NPCs(dt):
     for npc in route[map_idx].npcs:
         npc.update(dt)
+
+
+def refresh_bonuses(dt):
+    for bonus in route[map_idx].bonuses:
+        bonus.update(dt)
 
 
 def NPC_react(_):
@@ -567,8 +683,9 @@ def clocktick(_):
 
 
 pyglet.clock.schedule_interval(clocktick, 1)
-# pyglet.clock.schedule_interval(react_to_serial, 0.02)
+pyglet.clock.schedule_interval(react_to_serial, 0.02)
 pyglet.clock.schedule_interval(refresh_NPCs, 0.05)
+pyglet.clock.schedule_interval(refresh_bonuses, 0.05)
 pyglet.clock.schedule_interval(NPC_react, 0.5)
 pyglet.clock.schedule_interval(player.update, 0.05)
 pyglet.clock.schedule_interval(finish_line.update, 0.05)

@@ -1,3 +1,6 @@
+from pyglet.text import Label
+
+
 def dualdigit(num: int) -> str:
     return (str(num) if num > 9 else "0" + str(num)) if num < 100 else str(num % 100)
 
@@ -40,3 +43,24 @@ def calc_selecs_x(
             window_width / 2,
             window_width / 2 + padding + labelwidth,
         )
+
+
+BONUS_FILENAMES = {
+    "slip_left": "slip_left.png",
+    "slip_right": "slip_right.png",
+    "accelerate": "accelerate.png",
+    "bulldozer": "bulldozer.png",
+}
+
+
+def make_label(text="", size=24, x=0, y=0, color=(0, 0, 0, 255), *args, **kwargs):
+    return Label(
+        text=text,
+        x=x,
+        y=y,
+        color=color,
+        font_name="Noto Sans CJK SC",
+        font_size=size,
+        *args,
+        **kwargs,
+    )

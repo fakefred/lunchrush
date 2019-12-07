@@ -1,13 +1,14 @@
 from machine import Pin
 from time import sleep_ms
 
-pin_no = [2, 15]
+pin_no = [34, 35, 32, 33, 25, 26]
 
 pins = [Pin(i, Pin.IN) for i in pin_no]
 
 while True:
-    out = ''
+    out = ""
     for pin in pins:
-        out += str(1 - int(pin.value()))  # reverse
+        # reverse, because of pull-up resistors
+        out += str(1 - int(pin.value()))
     print(out)
-    sleep_ms(10)
+    sleep_ms(20)
