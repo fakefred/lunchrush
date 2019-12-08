@@ -1,28 +1,20 @@
 #!/usr/bin/python3.8
 import pyglet
-from readmaps import read
-
+from readmaps import *
 from readserial import view_value, read_thread
-from utils import (
-    dualdigit,
-    format_time,
-    center_image,
-    calc_lanes_x,
-    calc_selecs_x,
-    calc_lane_separators_x,
-    BONUS_FILENAMES,
-    make_label,
-)
+from utils import *
 from random import random, randint, choice
 from os import listdir
 
 keys = pyglet.window.key
 
-npc_images = [file for file in listdir("./res/player/") if file.endswith(".png")]
+avatars = [file for file in listdir("./res/player/") if file.endswith(".png")]
 
 CHOICE_BUTTONS_Y_AXES = (200, 150, 100)
-
 DEBUG = True
+
+init_selections_left = 2
+player_bulldozer_mode = False
 
 """ ALL THE CLASSES """
 base_velocity = 120 if DEBUG else 36
@@ -36,11 +28,8 @@ class Player(pyglet.sprite.Sprite):
         super().__init__(*args, **kwargs)
         self.is_player = True
         self.initiating = True
+        self.allowed_to_run = False
         self.y = 120
-        # start from #0
-        self.map = route[0]
-        self.minimap = pyglet.image.load(self.map.minimap_image_path)
-        next_map_cue.text = "下一关：" + maps[self.map.exits[0]].display_name
         # absolute_y: distance from map starting line
         self.absolute_y = 0
         # NPCs will move at NPC.v relative to Player.v
@@ -48,9 +37,19 @@ class Player(pyglet.sprite.Sprite):
         self.v = self.init_v
         # delta_t = time since last step
         self.delta_t = 0.0
-        # center self
-        self.lane = route[0].lanes // 2 - 1
         self.reached_cafeteria = False
+
+        global player_bulldozer_mode
+        player_bulldozer_mode = False
+        self.people_killed = 0
+
+    def load_map(self):
+        # start from #0
+        self.map = route[0]
+        self.minimap = pyglet.image.load(self.map.minimap_image_path)
+        next_map_cue.text = "下一关：" + maps[self.map.exits[0]].display_name
+        # center self
+        self.lane = route[0].lanes // 2
         # choices
         self.approaching_EOM = False
         self.show_choices = False
@@ -67,9 +66,6 @@ class Player(pyglet.sprite.Sprite):
         if not self.map.exits[0] == "":
             # unless there's no exit, assume default exit
             route.append(maps[self.map.exits[0]])
-
-        self.bulldozer_mode = False
-        self.people_killed = 0
 
     @property
     def lane(self):
@@ -90,12 +86,15 @@ class Player(pyglet.sprite.Sprite):
 
     def update(self, dt):
         if not self.reached_cafeteria:
-            if self.initiating:
-                self.x = self.dest_x
-                self.initiating = False
+            try:
+                if self.initiating:
+                    self.x = self.dest_x
+                    self.initiating = False
 
-            if self.dest_x != self.x:
-                self.x = round((self.dest_x + self.x) / 2)
+                if self.dest_x != self.x:
+                    self.x = round((self.dest_x + self.x) / 2)
+            except AttributeError:
+                pass
 
             self.delta_t += dt
             # decrease self.v over time after each step until player stops
@@ -109,17 +108,17 @@ class Player(pyglet.sprite.Sprite):
                 self.next_map()
 
     def step(self):
-        if not self.reached_cafeteria:
+        if not self.reached_cafeteria and self.allowed_to_run:
             self.init_v = base_velocity / (self.delta_t + 0.01)  # prevent div-by-zero
             self.v = self.init_v
             self.delta_t = 0
 
     def next_map(self):
-        global map_idx
+        global map_idx, player_bulldozer_mode
 
         self.approaching_EOM = False
         self.show_choices = False
-        self.bulldozer_mode = False
+        player_bulldozer_mode = False
 
         if map_idx < len(route) - 1:  # if there's another map following in `route`
             total_lanes_on_prev_map = self.map.lanes
@@ -164,16 +163,22 @@ class Player(pyglet.sprite.Sprite):
                 route[map_idx].npcs = []
 
     def map_finished(self):
-        if self.absolute_y >= self.map.length:
-            return True
+        try:
+            if self.absolute_y >= self.map.length:
+                return True
+        except AttributeError:
+            pass
         return False
 
     def check_if_is_approaching_EOM(self):
-        if self.map.length - self.absolute_y <= 1000 and not self.approaching_EOM:
-            self.approaching_EOM = True
-            if len(self.map.exits) > 1:
-                # show choices if applicable
-                self.show_choices = True
+        try:
+            if self.map.length - self.absolute_y <= 1000 and not self.approaching_EOM:
+                self.approaching_EOM = True
+                if len(self.map.exits) > 1:
+                    # show choices if applicable
+                    self.show_choices = True
+        except AttributeError:
+            pass
 
     def generate_exit_choices_labels(self):
         self.exit_choices_labels = []
@@ -183,7 +188,7 @@ class Player(pyglet.sprite.Sprite):
             self.exit_choices_labels.append(
                 make_label(
                     text=maps[exit].display_name,
-                    x=width - 300,
+                    x=width - 320,
                     y=CHOICE_BUTTONS_Y_AXES[exit_x_assignment_idx],
                     width=300,
                     height=30,
@@ -208,21 +213,22 @@ class Player(pyglet.sprite.Sprite):
             next_map_cue.text = "下一关：" + maps[self.map.exits[idx]].display_name
 
     def check_if_hit_npc_or_bonus(self):
-        for npc in self.map.npcs:
-            if self.lane == npc.lane and 0 < npc.y - self.y < 45:
-                if self.bulldozer_mode:
-                    if npc.running:  # if they're still alive
-                        npc.image = center_image(
-                            pyglet.resource.image("bloodstain.png")
-                        )
-                        npc.running = False
-                        npc.v = 0
-                        self.people_killed += 1
-                else:
-                    npc.on_hit(self)
-        for bonus in self.map.bonuses:
-            if self.lane == bonus.lane and 0 < bonus.y - self.y < 45:
-                bonus.on_hit(self)
+        try:
+            for npc in self.map.npcs:
+                if self.lane == npc.lane and 0 < npc.y - self.y < 45:
+                    if player_bulldozer_mode:
+                        if npc.running:  # if they're still alive
+                            npc.image = centered_image("bloodstain.png")
+                            npc.running = False
+                            npc.v = 0
+                            self.people_killed += 1
+                    else:
+                        npc.on_hit(self)
+            for bonus in self.map.bonuses:
+                if self.lane == bonus.lane and 0 < bonus.y - self.y < 45:
+                    bonus.on_hit(self)
+        except AttributeError:
+            pass
 
 
 class NPC(pyglet.sprite.Sprite):
@@ -349,14 +355,10 @@ class Bonus(pyglet.sprite.Sprite):
     # not all positive
     # inherits pyglet.sprite.Sprite
     # does not switch lanes
-    def __init__(self, bonus_type, lane=0, lanes_x=(), *args, **kwargs):
-        self.type = bonus_type
+    def __init__(self, category, lane=0, lanes_x=(), *args, **kwargs):
+        self._category = category
         super().__init__(
-            img=center_image(
-                pyglet.resource.image("bonus/" + BONUS_FILENAMES[bonus_type])
-            ),
-            *args,
-            **kwargs,
+            img=centered_image("bonus/" + BONUS_FILENAMES[category]), *args, **kwargs,
         )
         self.lane = lane
         self.x = lanes_x[lane]
@@ -364,16 +366,37 @@ class Bonus(pyglet.sprite.Sprite):
     def update(self, dt):
         self.y -= player.v * dt
 
+    @property
+    def category(self):
+        return self._category
+
+    @category.setter
+    def category(self, cat):
+        perceived_category = cat if not self.category == "disabled" else ""
+        self._category = cat
+        if cat == "bulldozer":
+            self.image = centered_image("bonus/bulldozer.png")
+        elif cat == "exit_bulldozer":
+            self.image = centered_image("bonus/exit_bulldozer.png")
+
     def on_hit(self, character):
-        if self.type == "slip_left":
+        global player_bulldozer_mode
+        if self.category == "slip_left":
             character.left()
-        elif self.type == "slip_right":
+        elif self.category == "slip_right":
             character.right()
-        elif self.type == "accelerate":
+        elif self.category == "accelerate":
             character.v *= 1.5
-        elif self.type == "bulldozer":
+        elif self.category == "bulldozer":
             if character.is_player:
-                character.bulldozer_mode = True
+                player_bulldozer_mode = True
+                character.map.toggle_bulldozer_bonuses()
+        elif self.category == "exit_bulldozer":
+            if character.is_player:
+                player_bulldozer_mode = False
+                character.map.toggle_bulldozer_bonuses()
+
+        self.category = "disabled"
 
 
 class Map:
@@ -409,9 +432,7 @@ class Map:
             # NPCs that have been running midway since game started
             npcs.append(
                 NPC(
-                    img=center_image(
-                        pyglet.resource.image(f"player/{choice(npc_images)}")
-                    ),
+                    img=centered_image(f"player/{choice(avatars)}"),
                     track=self,
                     lane=randint(0, self.lanes - 1),
                     y=randint(-self.length / 4, self.length),
@@ -425,9 +446,11 @@ class Map:
     def initiate_bonuses(self):
         bonuses = []
         batch = pyglet.graphics.Batch()
+
         for _ in range(round(self.bonus_density * self.length * self.lanes)):
             bonuses.append(
                 Bonus(
+                    # reads keys from BONUS_FILENAMES
                     choice(list(BONUS_FILENAMES)),
                     lane=randint(0, self.lanes - 1),
                     lanes_x=self.lanes_x,
@@ -438,11 +461,21 @@ class Map:
         self.bonuses = bonuses
         self.bonus_batch = batch
 
+    def toggle_bulldozer_bonuses(self):
+        if player_bulldozer_mode:
+            for bonus in self.bonuses:
+                if bonus.category == "bulldozer":
+                    bonus.category = "exit_bulldozer"
+        else:
+            for bonus in self.bonuses:
+                if bonus.category == "exit_bulldozer":
+                    bonus.category = "bulldozer"
+
 
 class FinishLine(pyglet.sprite.Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.y = height + 10
+        self.y = height + 120
         self.x = width / 2
         self.moving = False
 
@@ -455,13 +488,13 @@ class FinishLine(pyglet.sprite.Sprite):
                 self.reset()
 
         else:
-            if route[map_idx].length - player.absolute_y < height:
+            if len(route) and route[map_idx].length - player.absolute_y < height:
                 self.moving = True
 
     def reset(self):
         self.moving = False
-        self.y = height + 10
-        next_map_cue.y = height + 20
+        self.y = height + 120
+        next_map_cue.y = height + 150
 
 
 """ GRAPHICS SETUP """
@@ -478,6 +511,11 @@ white = pyglet.image.SolidColorImagePattern((255, 255, 255, 255)).create_image(
 pyglet.resource.path = ["./res"]
 pyglet.resource.reindex()
 
+
+def centered_image(filename: str):
+    return center_image(pyglet.resource.image(filename))
+
+
 lane_sep_img = pyglet.image.load("./res/track-separator.png")
 
 # button images beside choice labels to indicate player which button(s) to push
@@ -486,20 +524,16 @@ for name in ("red", "yellow", "both"):
     button_imgs[name] = pyglet.image.load(f"./res/buttons/{name}.png")
     button_imgs[name].anchor_y = 40
 
+
 """ SCORING SETUP """
 # displayed and updated over time
 time = [12, 0, 0]
-
 time_label = make_label(text=format_time(time), x=20, y=(height - 68), size=48)
-
 vlabel = make_label(text="v=0.00", x=20, y=(height - 120), size=32)
-
 ylabel = make_label(text="y=0.00/0", x=20, y=(height - 160), size=32)
-
 maplabel = make_label(
     text="你在： ---", x=20, y=(height - (220 if DEBUG else 120)), size=32,
 )
-
 bulldozer_label = make_label(text="您已进入推土机模式", x=width - 300, y=360)
 people_killed_label_template = lambda n_killed: f"已杀害 {n_killed} 人"
 people_killed_label = make_label(
@@ -523,66 +557,127 @@ for map_key in raw_maps:
         exits=map_dict["exits"],
         minimap_image_path=map_dict["minimap_image"],
     )
-
-route = [maps["l1"]]
+route = []
 map_idx = 0
-next_map_cue = pyglet.text.Label(
-    x=width / 2,
-    y=(height + 20),
-    color=(248, 101, 57, 255),
-    font_name="Noto Sans CJK SC",
-    font_size=32,
-    anchor_x="center",
+next_map_cue = make_label(
+    x=width / 2, y=(height + 20), color=(248, 101, 57, 255), size=32, anchor_x="center",
 )
-
-finish_line = FinishLine(img=center_image(pyglet.resource.image("finish_line.png")))
+finish_line = FinishLine(img=centered_image("finish_line.png"))
 
 """ PLAYER INITIATION """
-player = Player(img=center_image(pyglet.resource.image("player/megan.png")))
+player = Player(img=centered_image("player/megan.png"))
+
+selection_cursor = [0, 0]  # x, y, 0-indexed
+cursor_matrix_size = (3, 2)  # 1-indexed
+cursor_sprite = pyglet.sprite.Sprite(img=centered_image("cursor_box.png"))
+panel_demonstration = pyglet.resource.image("panel.png")
+confirmed = False
+
+# generate batches
+avi_selection_label = make_label(text="请选择头像", size=32, x=950, y=900, anchor_x="center")
+avi_id = 0
+avi_sprites = []
+avi_batch = pyglet.graphics.Batch()
+for avi_filename in avatars:
+    avi_sprites.append(
+        pyglet.sprite.Sprite(
+            **AVATAR_LABEL_AXES[avi_id],  # contains x's and y's
+            img=centered_image(f"player/{avi_filename}"),
+            batch=avi_batch,
+        )
+    )
+    avi_id += 1
+
+clr_selection_label = make_label(text="请选择班级", size=32, x=950, y=900, anchor_x="center")
+clr_id = 0
+clr_labels = []
+clr_batch = pyglet.graphics.Batch()
+for map_name in LIST_OF_CLASSROOMS:  # 29 classes
+    clr_labels.append(
+        make_label(
+            text=raw_maps[map_name]["display_name"],
+            **CLASSROOM_LABEL_AXES[clr_id],
+            batch=clr_batch,
+        )
+    )
+    clr_id += 1
+prev_clr_id = -1
 
 
 @window.event
 def on_draw():
     # cover window with white bg
     # equivalent of clearing canvas
-    white.blit(0, 0)
-    # update time label, unless reached cafeteria
-    if not player.reached_cafeteria:
-        time_label.text = format_time(time)
-    time_label.draw()
-    maplabel.draw()
+    white.blit(0, 0)  # update time label, unless reached cafeteria
+    global init_selections_left, confirmed, selection_cursor, cursor_matrix_size, prev_clr_id
+    if init_selections_left == 2:
+        # select avatar
+        avi_selection_label.draw()
+        avi_batch.draw()
+        panel_demonstration.blit(720, 20)
+        id = selection_cursor[1] * cursor_matrix_size[0] + selection_cursor[0]
+        cursor_position = AVATAR_LABEL_AXES[id]
+        cursor_sprite.x = cursor_position["x"]
+        cursor_sprite.y = cursor_position["y"]
+        cursor_sprite.draw()
+        if confirmed:
+            player.image = centered_image(f"player/{avatars[id]}")
+            confirmed = False
+            cursor_matrix_size = (3, 10)
+            selection_cursor = [0, 0]
+            init_selections_left -= 1
 
-    if player.bulldozer_mode:
-        bulldozer_label.draw()
-        people_killed_label.text = people_killed_label_template(player.people_killed)
-        people_killed_label.draw()
-    elif player.reached_cafeteria:
-        people_killed_label.draw()
+    elif init_selections_left == 1:
+        # select classroom of departure
+        clr_selection_label.draw()
+        clr_batch.draw()
+        panel_demonstration.blit(720, 20)
+        id = selection_cursor[0] * cursor_matrix_size[1] + selection_cursor[1]
+        if not id == prev_clr_id and id < len(LIST_OF_CLASSROOMS):
+            clr_labels[prev_clr_id].color = (0, 0, 0, 255)
+            clr_labels[id].color = (248, 101, 57, 255)
+            prev_clr_id = id
 
-    if DEBUG:
-        vlabel.text = f"v={player.v: .2f}"
-        vlabel.draw()
-        ylabel.text = f"y={player.absolute_y: .2f}/{player.map.length}"
-        ylabel.draw()
+        if confirmed:
+            route.append(maps[LIST_OF_CLASSROOMS[id]])
+            player.load_map()
+            player.allowed_to_run = True
+            confirmed = False
+            init_selections_left -= 1
 
-    for x in calc_lane_separators_x(width, lane_width, player.map.lanes):
-        lane_sep_img.blit(x, 0)
-
-    finish_line.draw()
-    next_map_cue.draw()
-    route[map_idx].npc_batch.draw()
-    route[map_idx].bonus_batch.draw()
-
-    if player.show_choices:
-        player.exit_choices_labels_batch.draw()
-        button_x_axis = width - 380
-        button_imgs["red"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[0])
-        button_imgs["yellow"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[1])
-        if len(player.exit_choices) == 3:
-            button_imgs["both"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[2])
-
-    player.minimap.blit(100, 500 if DEBUG else 600)
-    player.draw()
+    else:
+        if not player.reached_cafeteria:
+            time_label.text = format_time(time)
+        time_label.draw()
+        maplabel.draw()
+        if player_bulldozer_mode:
+            bulldozer_label.draw()
+            people_killed_label.text = people_killed_label_template(
+                player.people_killed
+            )
+            people_killed_label.draw()
+        elif player.reached_cafeteria and player.people_killed:
+            people_killed_label.draw()
+        if DEBUG:
+            vlabel.text = f"v={player.v: .2f}"
+            vlabel.draw()
+            ylabel.text = f"y={player.absolute_y: .2f}/{player.map.length}"
+            ylabel.draw()
+        for x in calc_lane_separators_x(width, lane_width, player.map.lanes):
+            lane_sep_img.blit(x, 0)
+        finish_line.draw()
+        next_map_cue.draw()
+        route[map_idx].npc_batch.draw()
+        route[map_idx].bonus_batch.draw()
+        if player.show_choices:
+            player.exit_choices_labels_batch.draw()
+            button_x_axis = width - 380
+            button_imgs["red"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[0])
+            button_imgs["yellow"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[1])
+            if len(player.exit_choices) == 3:
+                button_imgs["both"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[2])
+        player.minimap.blit(100, 500 if DEBUG else 600)
+        player.draw()
 
 
 """ EVENTS """
@@ -608,10 +703,10 @@ def on_key_press(symbol, mods):
 pps = {  # previous pin values
     "pedal_l": 0,
     "pedal_r": 0,
-    'panel_l': 0,  # panel_[lr]: green button 60mm in diameter
-    'panel_r': 0,
-    'panel_a': 0,  # red button 30mm
-    'panel_b': 0   # yellow button 30mm
+    "panel_l": 0,  # panel_[lr]: green button 60mm in diameter
+    "panel_r": 0,
+    "panel_a": 0,  # red button 30mm
+    "panel_b": 0,  # yellow button 30mm
 }
 foot_down = 0  # the foot stamped down
 
@@ -620,56 +715,73 @@ def react_to_serial(_):
     # access values read and stored in `readserial.py`
     global pps
     global foot_down
-    rps = view_value() # response pin values
+    rps = view_value()  # response pin values
     # renamed pin value variables to keep it short
     # just remember pps is old data and rps is new
     # pedal_[lr]: type int. interpreted as bools.
-    pedal_l = rps["pedal_l"] 
-    pedal_r = rps["pedal_r"] 
+    pedal_l = rps["pedal_l"]
+    pedal_r = rps["pedal_r"]
     # player.step() criteria:
     # L0R1 -> L1R0 or L1R0 -> L0R1
     res_foot_down = foot_down  # default
-    if pedal_l and (not pedal_r):
-        res_foot_down = 0
-    elif (not pedal_l) and pedal_r:
-        res_foot_down = 1
-    if not res_foot_down == foot_down:
-        player.step()
-        foot_down = res_foot_down
-    
-    # steering
-    if not pps['panel_l'] and rps['panel_l']: 
-        player.left()
-    elif not pps['panel_r'] and rps['panel_r']: 
-        player.right()
 
-    # decision-making
-    if not (pps['panel_a'] and pps['panel_b']):
-        # if player was not pushing down both buttons on prev read
-        # prevents non-simultaneous button release
-        if not pps['panel_a'] and rps['panel_a'] and not rps['panel_b']: # red
-            player.alter_exit(0)
-        elif not pps['panel_b'] and rps['panel_b'] and not rps['panel_a']: # yellow
-            player.alter_exit(1)
-        elif rps['panel_a'] and rps['panel_b']: # both
-            player.alter_exit(2)
+    if not init_selections_left:
+        if pedal_l and (not pedal_r):
+            res_foot_down = 0
+        elif (not pedal_l) and pedal_r:
+            res_foot_down = 1
+        if not res_foot_down == foot_down:
+            player.step()
+            foot_down = res_foot_down
+        # steering
+        if not pps["panel_l"] and rps["panel_l"]:
+            player.left()
+        elif not pps["panel_r"] and rps["panel_r"]:
+            player.right()
+        # decision-making
+        if not (pps["panel_a"] and pps["panel_b"]):
+            # if player was not pushing down both buttons on prev read
+            # prevents non-simultaneous button release
+            if not pps["panel_a"] and rps["panel_a"] and not rps["panel_b"]:  # red
+                player.alter_exit(0)
+            elif not pps["panel_b"] and rps["panel_b"] and not rps["panel_a"]:  # yellow
+                player.alter_exit(1)
+            elif rps["panel_a"] and rps["panel_b"]:  # both
+                player.alter_exit(2)
+    else:
+        if not pps["panel_l"] and rps["panel_l"]:
+            move_cursor(selection_cursor, "h", cursor_matrix_size)
+        elif not pps["panel_a"] and rps["panel_a"]:
+            move_cursor(selection_cursor, "j", cursor_matrix_size)
+        elif not pps["panel_b"] and rps["panel_b"]:
+            move_cursor(selection_cursor, "k", cursor_matrix_size)
+        elif not pps["panel_r"] and rps["panel_r"]:
+            move_cursor(selection_cursor, "l", cursor_matrix_size)
+        elif (not pps["pedal_l"] and rps["pedal_l"]) or (
+            not pps["pedal_r"] and rps["pedal_r"]
+        ):
+            global confirmed
+            confirmed = True
 
-    pps = rps 
+    pps = rps
 
 
 def refresh_NPCs(dt):
-    for npc in route[map_idx].npcs:
-        npc.update(dt)
+    if len(route):
+        for npc in route[map_idx].npcs:
+            npc.update(dt)
 
 
 def refresh_bonuses(dt):
-    for bonus in route[map_idx].bonuses:
-        bonus.update(dt)
+    if len(route):
+        for bonus in route[map_idx].bonuses:
+            bonus.update(dt)
 
 
 def NPC_react(_):
-    for npc in route[map_idx].npcs:
-        npc.react(_)
+    if len(route):
+        for npc in route[map_idx].npcs:
+            npc.react(_)
 
 
 def clocktick(_):

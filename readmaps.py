@@ -24,3 +24,5 @@ def read(window_width: int, lane_width: int) -> dict:
         maps[line[0]] = this_map
 
     return maps
+
+LIST_OF_CLASSROOMS = [line.strip() for line in open("efzclassrooms.txt").readlines()]

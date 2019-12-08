@@ -48,7 +48,7 @@ def calc_selecs_x(
 BONUS_FILENAMES = {
     "slip_left": "slip_left.png",
     "slip_right": "slip_right.png",
-    "accelerate": "accelerate.png",
+    # "accelerate": "accelerate.png",
     "bulldozer": "bulldozer.png",
 }
 
@@ -64,3 +64,33 @@ def make_label(text="", size=24, x=0, y=0, color=(0, 0, 0, 255), *args, **kwargs
         *args,
         **kwargs,
     )
+
+
+def move_cursor(sc: list, di: str, sz: tuple) -> list:
+    # sc: selection cursor
+    # di: direction (vim keybinding!)
+    if di == "h" and sc[0] > 0:  # left
+        sc[0] -= 1
+    elif di == "j" and sc[1] < sz[1] - 1:  # down
+        sc[1] += 1
+    elif di == "k" and sc[1] > 0:  # up
+        sc[1] -= 1
+    elif di == "l" and sc[0] < sz[0] - 1:  # right
+        sc[0] += 1
+
+
+AVATAR_LABEL_AXES = (
+    {"x": 750, "y": 800},
+    {"x": 950, "y": 800},
+    {"x": 1150, "y": 800},
+    {"x": 750, "y": 600},
+    {"x": 950, "y": 600},
+    {"x": 1150, "y": 600},
+)
+
+classroom_positions = []
+for x in range(760, 1161, 200):
+    for y in range(840, 440, -40):
+        classroom_positions.append({"x": x, "y": y})
+
+CLASSROOM_LABEL_AXES = tuple(classroom_positions)
