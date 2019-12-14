@@ -3,105 +3,105 @@ s101,高一 1 班,1,9,0,0,s101w;s101e,corridors/s
 s102,高一 2 班,1,9,0,0,s102w;s102e,corridors/s
 s103,高一 3 班,1,9,0,0,s103e;s103w,corridors/s
 s104,高一 4 班,1,9,0,0,s104e;s104w,corridors/s
+n102,高一 5 班,1,9,0,0,n102w;n102e,corridors/n
+n103,高一 6 班,1,9,0,0,n103w;n103e,corridors/n
+n104,高一 7 班,1,9,0,0,n104e;n104w,corridors/n
+n202,高一 8 班,1,9,0,0,n202w;n202e,corridors/n
+n203,高一 9 班,1,9,0,0,n203w;n203e,corridors/n
+n105,高一 10 班,1,9,0,0,n105e;n105w,corridors/n
+n303,高二 1 班,1,9,0,0,n303w;n303e,corridors/n
+n304,高二 2 班,1,9,0,0,n304e;n304w,corridors/n
+n305,高二 3 班,1,9,0,0,n305e;n305w,corridors/n
 s201,高二 4 班,1,9,0,0,s201w;s201e,corridors/s
 s202,高二 5 班,1,9,0,0,s202w;s202e,corridors/s
 s203,高二 6 班,1,9,0,0,s203e;s203w,corridors/s
 s204,高二 7 班,1,9,0,0,s204e;s204w,corridors/s
+n204,高二 8 班,1,9,0,0,n203e;n203w,corridors/n
+n205,高二 9 班,1,9,0,0,n104e;n104w,corridors/n
+n302,高二 10 班,1,9,0,0,n301w;n301e,corridors/n
 s301,高三 1 班,1,9,0,0,s301w;s301e,corridors/s
 s302,高三 2 班,1,9,0,0,s302w;s302e,corridors/s
 s303,高三 3 班,1,9,0,0,s303e;s303w,corridors/s
 s304,高三 4 班,1,9,0,0,s304e;s304w,corridors/s
-s401,高三 ? 班,1,9,0,0,s401w;s401e,corridors/s
-s402,高三 ? 班,1,9,0,0,s402w;s402e,corridors/s
-s403,高三 ? 班,1,9,0,0,s403e;s403w,corridors/s
-s404,高三 ? 班,1,9,0,0,s404e;s404w,corridors/s
-n102,高一 5 班,1,9,0,0,n101w;n101e,corridors/n
-n103,高一 6 班,1,9,0,0,n102w;n102e,corridors/n
-n104,高一 7 班,1,9,0,0,n103e;n103w,corridors/n
-n105,高一 10 班,1,9,0,0,n104e;n104w,corridors/n
-n202,高? ? 班,1,9,0,0,n201w;n201e,corridors/n
-n203,高? ? 班,1,9,0,0,n202w;n202e,corridors/n
-n204,高? ? 班,1,9,0,0,n203e;n203w,corridors/n
-n205,高? ? 班,1,9,0,0,n104e;n104w,corridors/n
-n302,高二 10 班,1,9,0,0,n301w;n301e,corridors/n
-n303,高二 1 班,1,9,0,0,n302w;n302e,corridors/n
-n304,高二 2 班,1,9,0,0,n303e;n303w,corridors/n
-n305,高二 3 班,1,9,0,0,n304e;n304w,corridors/n
-n402,高三 9 班,1,9,0,0,n401w;n401e,corridors/n
+s401,高三 5 班,1,9,0,0,s401w;s401e,corridors/s
+s402,高三 6 班,1,9,0,0,s402w;s402e,corridors/s
+s403,高三 7 班,1,9,0,0,s403e;s403w,corridors/s
+s404,高三 8 班,1,9,0,0,s404e;s404w,corridors/s
+n402,高三 9 班,1,9,0,0,n402w;n402e,corridors/n
 i1,信息 1 楼走廊,5,50,0.002,0.0004,ilb1;nw.1-2,corridors/info
 i2,信息 2 楼走廊,5,50,0.002,0.0004,nw.2-1;nw.2-3,corridors/info
 i3,信息 3 楼走廊,5,50,0.002,0.0004,ilb3;nw.3-2,corridors/info
 i4,信息 4 楼走廊,5,50,0.002,0.0004,nw.4-3,corridors/info
 s1w,南 1 楼走廊,3,66,0.001,0.0004,i1;sw.1-2,corridors/sw
-s101w,左转进南 1 楼走廊,3,8,0.001,0.0004,i1;sw.1-2,corridors/sw
-s102w,左转进南 1 楼走廊,3,21,0.001,0.0004,i1;sw.1-2,corridors/sw
-s103w,左转进南 1 楼走廊,3,34,0.001,0.0004,i1;sw.1-2,corridors/sw
-s104w,左转进南 1 楼走廊,3,47,0.001,0.0004,i1;sw.1-2,corridors/sw
-s101e,右转进南 1 楼走廊,3,47,0.001,0.0004,se.1-2;pebbleroad_main,corridors/se
-s102e,右转进南 1 楼走廊,3,34,0.001,0.0004,se.1-2,corridors/se
-s103e,右转进南 1 楼走廊,3,21,0.001,0.0004,se.1-2,corridors/se
-s104e,右转进南 1 楼走廊,3,8,0.001,0.0004,se.1-2,corridors/se
+s101w,右转进南 1 楼走廊,3,8,0.001,0.0004,i1;sw.1-2,corridors/sw
+s102w,右转进南 1 楼走廊,3,21,0.001,0.0004,i1;sw.1-2,corridors/sw
+s103w,右转进南 1 楼走廊,3,34,0.001,0.0004,i1;sw.1-2,corridors/sw
+s104w,右转进南 1 楼走廊,3,47,0.001,0.0004,i1;sw.1-2,corridors/sw
+s101e,左转进南 1 楼走廊,3,47,0.001,0.0004,se.1-2;pebbleroad_main,corridors/se
+s102e,左转进南 1 楼走廊,3,34,0.001,0.0004,se.1-2,corridors/se
+s103e,左转进南 1 楼走廊,3,21,0.001,0.0004,se.1-2,corridors/se
+s104e,左转进南 1 楼走廊,3,8,0.001,0.0004,se.1-2,corridors/se
 s2w,南 2 楼走廊,3,66,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
-s201w,左转进南 2 楼走廊,3,8,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
-s202w,左转进南 2 楼走廊,3,21,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
-s203w,左转进南 2 楼走廊,3,34,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
-s204w,左转进南 2 楼走廊,3,47,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
-s201e,右转进南 2 楼走廊,3,47,0.001,0.0004,se.2-1;se.2-3,corridors/se
-s202e,右转进南 2 楼走廊,3,34,0.001,0.0004,se.2-1;se.2-3,corridors/se
-s203e,右转进南 2 楼走廊,3,21,0.001,0.0004,se.2-1;se.2-3,corridors/se
-s204e,右转进南 2 楼走廊,3,8,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s201w,右转进南 2 楼走廊,3,8,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s202w,右转进南 2 楼走廊,3,21,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s203w,右转进南 2 楼走廊,3,34,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s204w,右转进南 2 楼走廊,3,47,0.001,0.0004,i2;sw.2-1;sw.2-3,corridors/sw
+s201e,左转进南 2 楼走廊,3,47,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s202e,左转进南 2 楼走廊,3,34,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s203e,左转进南 2 楼走廊,3,21,0.001,0.0004,se.2-1;se.2-3,corridors/se
+s204e,左转进南 2 楼走廊,3,8,0.001,0.0004,se.2-1;se.2-3,corridors/se
 s3w,南 3 楼走廊,3,66,0.001,0.0004,i3;sw.3-2,corridors/sw
-s301w,左转进南 3 楼走廊,3,8,0.001,0.0004,i3;sw.3-2,corridors/sw
-s302w,左转进南 3 楼走廊,3,21,0.001,0.0004,i3;sw.3-2,corridors/sw
-s303w,左转进南 3 楼走廊,3,34,0.001,0.0004,i3;sw.3-2,corridors/sw
-s304w,左转进南 3 楼走廊,3,47,0.001,0.0004,i3;sw.3-2,corridors/sw
-s301e,右转进南 3 楼走廊,3,47,0.001,0.0004,se.3-2,corridors/se
-s302e,右转进南 3 楼走廊,3,34,0.001,0.0004,se.3-2,corridors/se
-s303e,右转进南 3 楼走廊,3,21,0.001,0.0004,se.3-2,corridors/se
-s304e,右转进南 3 楼走廊,3,8,0.001,0.0004,se.3-2,corridors/se
-s401w,左转进南 4 楼走廊,3,8,0.001,0.0004,i4;sw.4-3,corridors/sw
-s402w,左转进南 4 楼走廊,3,21,0.001,0.0004,i4;sw.4-3,corridors/sw
-s403w,左转进南 4 楼走廊,3,34,0.001,0.0004,i4;sw.4-3,corridors/sw
-s404w,左转进南 4 楼走廊,3,47,0.001,0.0004,i4;sw.4-3,corridors/sw
-s401e,右转进南 4 楼走廊,3,47,0.001,0.0004,se.4-3,corridors/se
-s402e,右转进南 4 楼走廊,3,34,0.001,0.0004,se.4-3,corridors/se
-s403e,右转进南 4 楼走廊,3,21,0.001,0.0004,se.4-3,corridors/se
-s404e,右转进南 4 楼走廊,3,8,0.001,0.0004,se.4-3,corridors/se
+s301w,右转进南 3 楼走廊,3,8,0.001,0.0004,i3;sw.3-2,corridors/sw
+s302w,右转进南 3 楼走廊,3,21,0.001,0.0004,i3;sw.3-2,corridors/sw
+s303w,右转进南 3 楼走廊,3,34,0.001,0.0004,i3;sw.3-2,corridors/sw
+s304w,右转进南 3 楼走廊,3,47,0.001,0.0004,i3;sw.3-2,corridors/sw
+s301e,左转进南 3 楼走廊,3,47,0.001,0.0004,se.3-2,corridors/se
+s302e,左转进南 3 楼走廊,3,34,0.001,0.0004,se.3-2,corridors/se
+s303e,左转进南 3 楼走廊,3,21,0.001,0.0004,se.3-2,corridors/se
+s304e,左转进南 3 楼走廊,3,8,0.001,0.0004,se.3-2,corridors/se
+s401w,右转进南 4 楼走廊,3,8,0.001,0.0004,i4;sw.4-3,corridors/sw
+s402w,右转进南 4 楼走廊,3,21,0.001,0.0004,i4;sw.4-3,corridors/sw
+s403w,右转进南 4 楼走廊,3,34,0.001,0.0004,i4;sw.4-3,corridors/sw
+s404w,右转进南 4 楼走廊,3,47,0.001,0.0004,i4;sw.4-3,corridors/sw
+s401e,左转进南 4 楼走廊,3,47,0.001,0.0004,se.4-3,corridors/se
+s402e,左转进南 4 楼走廊,3,34,0.001,0.0004,se.4-3,corridors/se
+s403e,左转进南 4 楼走廊,3,21,0.001,0.0004,se.4-3,corridors/se
+s404e,左转进南 4 楼走廊,3,8,0.001,0.0004,se.4-3,corridors/se
 n1w,北 1 楼走廊,3,76,0.001,0.0004,ilb1;nw.1-2,corridors/nw
-n102w,左转进北 1 楼走廊,3,18,0.001,0.0004,ilb1;nw.1-2,corridors/nw
-n103w,左转进北 1 楼走廊,3,31,0.001,0.0004,ilb1;nw.1-2,corridors/nw
-n104w,左转进北 1 楼走廊,3,44,0.001,0.0004,ilb1;nw.1-2,corridors/nw
-n105w,左转进北 1 楼走廊,3,57,0.001,0.0004,ilb1;nw.1-2,corridors/nw
-n102e,右转进北 1 楼走廊,3,47,0.001,0.0004,takeoff;ne.1-2,corridors/ne
-n103e,右转进北 1 楼走廊,3,34,0.001,0.0004,takeoff;ne.1-2,corridors/ne
-n104e,右转进北 1 楼走廊,3,21,0.001,0.0004,takeoff;ne.1-2,corridors/ne
-n105e,右转进北 1 楼走廊,3,8,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n102w,右转进北 1 楼走廊,3,18,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n103w,右转进北 1 楼走廊,3,31,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n104w,右转进北 1 楼走廊,3,44,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n105w,右转进北 1 楼走廊,3,57,0.001,0.0004,ilb1;nw.1-2,corridors/nw
+n102e,左转进北 1 楼走廊,3,47,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n103e,左转进北 1 楼走廊,3,34,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n104e,左转进北 1 楼走廊,3,21,0.001,0.0004,takeoff;ne.1-2,corridors/ne
+n105e,左转进北 1 楼走廊,3,8,0.001,0.0004,takeoff;ne.1-2,corridors/ne
 n2w,北 2 楼走廊,3,76,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
-n202w,左转进北 2 楼走廊,3,18,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
-n203w,左转进北 2 楼走廊,3,31,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
-n204w,左转进北 2 楼走廊,3,44,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
-n205w,左转进北 2 楼走廊,3,57,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
-n202e,右转进北 2 楼走廊,3,47,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
-n203e,右转进北 2 楼走廊,3,34,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
-n204e,右转进北 2 楼走廊,3,21,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
-n205e,右转进北 2 楼走廊,3,8,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n202w,右转进北 2 楼走廊,3,18,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n203w,右转进北 2 楼走廊,3,31,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n204w,右转进北 2 楼走廊,3,44,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n205w,右转进北 2 楼走廊,3,57,0.001,0.0004,nw.2-1;nw.2-3,corridors/nw
+n202e,左转进北 2 楼走廊,3,47,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n203e,左转进北 2 楼走廊,3,34,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n204e,左转进北 2 楼走廊,3,21,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
+n205e,左转进北 2 楼走廊,3,8,0.001,0.0004,ne.2-1;ne.2-3,corridors/ne
 n3w,北 3 楼,3,76,0.001,0.0004,ilb3;nw.3-2,corridors/nw
-n302w,左转进北 3 楼走廊,3,18,0.001,0.0004,ilb3;nw.3-2,corridors/nw
-n303w,左转进北 3 楼走廊,3,31,0.001,0.0004,ilb3;nw.3-2,corridors/nw
-n304w,左转进北 3 楼走廊,3,44,0.001,0.0004,ilb3;nw.3-2,corridors/nw
-n305w,左转进北 3 楼走廊,3,57,0.001,0.0004,ilb3;nw.3-2,corridors/nw
-n302e,右转进北 3 楼走廊,3,47,0.001,0.0004,ne.3-2,corridors/ne
-n303e,右转进北 3 楼走廊,3,34,0.001,0.0004,ne.3-2,corridors/ne
-n304e,右转进北 3 楼走廊,3,21,0.001,0.0004,ne.3-2,corridors/ne
-n305e,右转进北 3 楼走廊,3,8,0.001,0.0004,ne.3-2,corridors/ne
-n402w,左转进北 4 楼走廊,3,18,0.001,0.0004,nw.4-3,corridors/nw
-n403w,左转进北 4 楼走廊,3,31,0.001,0.0004,nw.4-3,corridors/nw
-n404w,左转进北 4 楼走廊,3,44,0.001,0.0004,nw.4-3,corridors/nw
-n405w,左转进北 4 楼走廊,3,57,0.001,0.0004,nw.4-3,corridors/nw
-n402e,右转进北 4 楼走廊,3,47,0.001,0.0004,ne.4-3,corridors/ne
-n403e,右转进北 4 楼走廊,3,34,0.001,0.0004,ne.4-3,corridors/ne
-n404e,右转进北 4 楼走廊,3,21,0.001,0.0004,ne.4-3,corridors/ne
-n405e,右转进北 4 楼走廊,3,8,0.001,0.0004,ne.4-3,corridors/ne
+n302w,右转进北 3 楼走廊,3,18,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n303w,右转进北 3 楼走廊,3,31,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n304w,右转进北 3 楼走廊,3,44,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n305w,右转进北 3 楼走廊,3,57,0.001,0.0004,ilb3;nw.3-2,corridors/nw
+n302e,左转进北 3 楼走廊,3,47,0.001,0.0004,ne.3-2,corridors/ne
+n303e,左转进北 3 楼走廊,3,34,0.001,0.0004,ne.3-2,corridors/ne
+n304e,左转进北 3 楼走廊,3,21,0.001,0.0004,ne.3-2,corridors/ne
+n305e,左转进北 3 楼走廊,3,8,0.001,0.0004,ne.3-2,corridors/ne
+n402w,右转进北 4 楼走廊,3,18,0.001,0.0004,nw.4-3,corridors/nw
+n403w,右转进北 4 楼走廊,3,31,0.001,0.0004,nw.4-3,corridors/nw
+n404w,右转进北 4 楼走廊,3,44,0.001,0.0004,nw.4-3,corridors/nw
+n405w,右转进北 4 楼走廊,3,57,0.001,0.0004,nw.4-3,corridors/nw
+n402e,左转进北 4 楼走廊,3,47,0.001,0.0004,ne.4-3,corridors/ne
+n403e,左转进北 4 楼走廊,3,34,0.001,0.0004,ne.4-3,corridors/ne
+n404e,左转进北 4 楼走廊,3,21,0.001,0.0004,ne.4-3,corridors/ne
+n405e,左转进北 4 楼走廊,3,8,0.001,0.0004,ne.4-3,corridors/ne
 ilb1,风雨走廊 1 楼,6,83,0.003,0.0006,l1;lb_spiral.1-2,corridors/ilb
 ilb3,风雨走廊 3 楼,6,83,0.003,0.0006,l3;lb_spiral.3-2,corridors/ilb
 pebbleroad_main,鹅卵石路,1,36,0.0005,0.0004,pebbleroad_w;pebbleroad_e,corridors/pbr_main
@@ -111,26 +111,26 @@ takeoff,腾飞广场,4,153,0.0005,0.0008,lb_spiral.1-2;l1,corridors/takeoff
 l1,生活 1 楼走廊,4,53,0.005,0.0004,cafeteria1;honeyhut;cafeteria_stairs.1-2,corridors/lb
 l2,生活 2 楼走廊,4,53,0.005,0.0004,cafeteria2;cafeteria_stairs.2-1,corridors/lb
 l3,生活 3 楼走廊,4,53,0.005,0.0004,cafeteria2;cafeteria_stairs.2-1,corridors/lb
-sw.1-2,上 南 2 楼,2,30,0.001,0.0003,i2;sw.2-3,stairs/sw
-sw.2-3,上 南 3 楼,2,30,0.001,0.0003,i3,stairs/sw
-sw.2-1,下 南 1 楼,2,30,0.001,0.0003,i1,stairs/sw
-sw.3-2,下 南 2 楼,2,30,0.001,0.0003,i2;sw.2-1,stairs/sw
-sw.4-3,下 南 3 楼,2,30,0.001,0.0003,i3;sw.3-2,stairs/sw
-se.1-2,上 南 2 楼,2,30,0.001,0.0003,s2w;se.2-3,stairs/se
-se.2-3,上 南 3 楼,2,30,0.001,0.0003,s3w,stairs/se
-se.2-1,下 南 1 楼,2,30,0.001,0.0003,s1w;pebbleroad_main,stairs/se
-se.3-2,下 南 2 楼,2,30,0.001,0.0003,s2w;se.2-1,stairs/se
-se.4-3,下 南 3 楼,2,30,0.001,0.0003,s3w;se.3-2,stairs/se
-nw.1-2,上 北 2 楼,2,30,0.001,0.0003,nw.2-3,stairs/nw
-nw.2-3,上 北 3 楼,2,30,0.001,0.0003,ilb3,stairs/nw
-nw.2-1,下 北 1 楼,2,30,0.001,0.0003,ilb1,stairs/nw
-nw.3-2,下 北 2 楼,2,30,0.001,0.0003,nw.2-1,stairs/nw
-nw.4-3,下 北 3 楼,2,30,0.001,0.0003,ilb3;nw.3-2,stairs/nw
-ne.1-2,上 北 2 楼,2,30,0.001,0.0003,n2w;ne.2-3,stairs/ne
-ne.2-3,上 北 3 楼,2,30,0.001,0.0003,n3w,stairs/ne
-ne.2-1,下 北 1 楼,2,30,0.001,0.0003,n1w;takeoff,stairs/ne
-ne.3-2,下 北 2 楼,2,30,0.001,0.0003,n2w;ne.2-1,stairs/ne
-ne.4-3,下 北 3 楼,2,30,0.001,0.0003,n3w;ne.3-2,stairs/ne
+sw.1-2,上 南 2 楼西楼梯,2,30,0.001,0.0003,i2;sw.2-3,stairs/sw
+sw.2-3,上 南 3 楼西楼梯,2,30,0.001,0.0003,i3,stairs/sw
+sw.2-1,下 南 1 楼西楼梯,2,30,0.001,0.0003,i1,stairs/sw
+sw.3-2,下 南 2 楼西楼梯,2,30,0.001,0.0003,i2;sw.2-1,stairs/sw
+sw.4-3,下 南 3 楼西楼梯,2,30,0.001,0.0003,i3;sw.3-2,stairs/sw
+se.1-2,上 南 2 楼东楼梯,2,30,0.001,0.0003,s2w;se.2-3,stairs/se
+se.2-3,上 南 3 楼东楼梯,2,30,0.001,0.0003,s3w,stairs/se
+se.2-1,下 南 1 楼东楼梯,2,30,0.001,0.0003,s1w;pebbleroad_main,stairs/se
+se.3-2,下 南 2 楼东楼梯,2,30,0.001,0.0003,s2w;se.2-1,stairs/se
+se.4-3,下 南 3 楼东楼梯,2,30,0.001,0.0003,s3w;se.3-2,stairs/se
+nw.1-2,上 北 2 楼西楼梯,2,30,0.001,0.0003,nw.2-3,stairs/nw
+nw.2-3,上 北 3 楼西楼梯,2,30,0.001,0.0003,ilb3,stairs/nw
+nw.2-1,下 北 1 楼西楼梯,2,30,0.001,0.0003,ilb1,stairs/nw
+nw.3-2,下 北 2 楼西楼梯,2,30,0.001,0.0003,nw.2-1,stairs/nw
+nw.4-3,下 北 3 楼西楼梯,2,30,0.001,0.0003,ilb3;nw.3-2,stairs/nw
+ne.1-2,上 北 2 楼东楼梯,2,30,0.001,0.0003,n2w;ne.2-3,stairs/ne
+ne.2-3,上 北 3 楼东楼梯,2,30,0.001,0.0003,n3w,stairs/ne
+ne.2-1,下 北 1 楼东楼梯,2,30,0.001,0.0003,n1w;takeoff,stairs/ne
+ne.3-2,下 北 2 楼东楼梯,2,30,0.001,0.0003,n2w;ne.2-1,stairs/ne
+ne.4-3,下 北 3 楼东楼梯,2,30,0.001,0.0003,n3w;ne.3-2,stairs/ne
 lb_spiral.1-2,上 生活 2 楼,2,24,0.001,0.0003,l2;lb_spiral.2-3,stairs/lb
 lb_spiral.2-3,上 生活 3 楼,2,24,0.001,0.0003,l3,stairs/lb
 lb_spiral.3-2,下 生活 2 楼,2,24,0.001,0.0003,l2;lb_spiral.2-1,stairs/lb

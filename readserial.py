@@ -1,11 +1,8 @@
 import serial
 from threading import Thread
 
-# reads output from ESP32 DevKit C running micropython
-# connect ESP32 via USB
-# change port accordingly
-s = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.1)
 
+CONNECTED = True
 line = ""
 
 
@@ -35,17 +32,26 @@ def fill_template(states: list) -> dict:
 
 
 PINS = 6  # number of pins connected
+read_thread = Thread(None, read_line_thread)
+
+
+# reads output from ESP32 DevKit C running micropython
+# connect ESP32 via USB
+# change port accordingly
+try:
+    s = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.1)
+    read_thread.start()
+
+except serial.serialutil.SerialException:
+    CONNECTED = False
 
 
 def view_value() -> int:
     global line
     states = bit_str_to_states(line.strip())
-    if len(states) == PINS:
+    if len(states) == PINS and CONNECTED:
         return fill_template(states)
     else:
         # default
         return fill_template([0] * PINS)
 
-
-read_thread = Thread(None, read_line_thread)
-read_thread.start()

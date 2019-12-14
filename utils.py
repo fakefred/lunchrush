@@ -1,4 +1,5 @@
 from pyglet.text import Label
+from math import sqrt
 
 
 def dualdigit(num: int) -> str:
@@ -48,8 +49,9 @@ def calc_selecs_x(
 BONUS_FILENAMES = {
     "slip_left": "slip_left.png",
     "slip_right": "slip_right.png",
-    # "accelerate": "accelerate.png",
     "bulldozer": "bulldozer.png",
+    "freeze": "freeze.png",
+    "-1s": "-1s.png",
 }
 
 
@@ -94,3 +96,16 @@ for x in range(760, 1161, 200):
         classroom_positions.append({"x": x, "y": y})
 
 CLASSROOM_LABEL_AXES = tuple(classroom_positions)
+
+
+def modulus_of_vector(vector: tuple) -> float:
+    return sqrt(vector[0] ** 2 + vector[1] ** 2)
+
+
+def time_spent(time: list):
+    h, m, s = tuple(time)
+    return (
+        (f"{h-12} 小时 " if h > 12 else "")
+        + (f"{m} 分 " if m else "")
+        + f"{s if s > 9 else '0'+str(m)} 秒"
+    )

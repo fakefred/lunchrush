@@ -3,6 +3,7 @@ import pyglet
 from readmaps import *
 from readserial import view_value, read_thread
 from utils import *
+from math import sqrt
 from random import random, randint, choice
 from os import listdir
 
@@ -24,24 +25,24 @@ class Player(pyglet.sprite.Sprite):
     # Player: the actual player of this game
     # inherits pyglet.sprite.Sprite
     # switches lanes; does not move vertically on the screen
+    people_killed = 0
+    is_player = True
+    initiating = True
+    allowed_to_run = False
+    # absolute_y: distance from map starting line
+    absolute_y = 0
+    # NPCs will move at NPC.v relative to Player.v
+    init_v = 0.0
+    v = init_v
+    # delta_t = time since last step
+    delta_t = 0.0
+    reached_cafeteria = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.is_player = True
-        self.initiating = True
-        self.allowed_to_run = False
         self.y = 120
-        # absolute_y: distance from map starting line
-        self.absolute_y = 0
-        # NPCs will move at NPC.v relative to Player.v
-        self.init_v = 0.0
-        self.v = self.init_v
-        # delta_t = time since last step
-        self.delta_t = 0.0
-        self.reached_cafeteria = False
-
         global player_bulldozer_mode
         player_bulldozer_mode = False
-        self.people_killed = 0
 
     def load_map(self):
         # start from #0
@@ -49,7 +50,9 @@ class Player(pyglet.sprite.Sprite):
         self.minimap = pyglet.image.load(self.map.minimap_image_path)
         next_map_cue.text = "下一关：" + maps[self.map.exits[0]].display_name
         # center self
-        self.lane = route[0].lanes // 2
+        lane_num = route[0].lanes // 2
+        self._lane = lane_num
+        self.dest_x = self.map.lanes_x[lane_num]
         # choices
         self.approaching_EOM = False
         self.show_choices = False
@@ -61,7 +64,7 @@ class Player(pyglet.sprite.Sprite):
             # it is necessary to select a designated exit
             self.generate_exit_choices_labels()
 
-        maplabel.text = f"你在: {self.map.display_name}"
+        map_label.text = f"你在: {self.map.display_name}"
 
         if not self.map.exits[0] == "":
             # unless there's no exit, assume default exit
@@ -73,8 +76,9 @@ class Player(pyglet.sprite.Sprite):
 
     @lane.setter
     def lane(self, lane_num):
-        self._lane = lane_num
-        self.dest_x = self.map.lanes_x[lane_num]
+        if self.allowed_to_run:
+            self._lane = lane_num
+            self.dest_x = self.map.lanes_x[lane_num]
 
     def left(self):
         if self.lane > 0 and not self.reached_cafeteria:
@@ -109,7 +113,7 @@ class Player(pyglet.sprite.Sprite):
 
     def step(self):
         if not self.reached_cafeteria and self.allowed_to_run:
-            self.init_v = base_velocity / (self.delta_t + 0.01)  # prevent div-by-zero
+            self.init_v = base_velocity / (self.delta_t + 0.1)  # prevent div-by-zero
             self.v = self.init_v
             self.delta_t = 0
 
@@ -129,7 +133,7 @@ class Player(pyglet.sprite.Sprite):
             ):  # no filename
                 self.minimap = pyglet.image.load(path)
 
-            maplabel.text = f"你在: {self.map.display_name}"
+            map_label.text = f"你在: {self.map.display_name}"
             finish_line.reset()
 
             # default selection
@@ -159,8 +163,29 @@ class Player(pyglet.sprite.Sprite):
                 self.reached_cafeteria = True
                 # stop running
                 self.v = 0
-                # remove all npcs in final map
+                # remove all stuff on final map
                 route[map_idx].npcs = []
+                route[map_idx].bonuses = []
+                # fill in stats
+                victory_label.text = (
+                    f"你用了 {time_spent(time)}到达{self.map.display_name}，跑饭成功！"
+                )
+                if self.people_killed:
+                    victory_label.text += f"\n在推土机模式下共碾压了 {self.people_killed} 个人"
+
+                victory_label.visible = True
+                # start showing & spinning victory bg image
+                victory_bg.visible = True
+                pyglet.clock.schedule_interval(victory_fx, 0.05)
+                for label in (map_label, time_label, y_label, v_label):
+                    label.visible = False
+
+                pyglet.clock.unschedule(react_to_serial)
+                pyglet.clock.unschedule(refresh_NPCs)
+                pyglet.clock.unschedule(refresh_bonuses)
+                pyglet.clock.unschedule(NPC_react)
+                pyglet.clock.unschedule(player.update)
+                pyglet.clock.unschedule(finish_line.update)
 
     def map_finished(self):
         try:
@@ -188,7 +213,7 @@ class Player(pyglet.sprite.Sprite):
             self.exit_choices_labels.append(
                 make_label(
                     text=maps[exit].display_name,
-                    x=width - 320,
+                    x=120,
                     y=CHOICE_BUTTONS_Y_AXES[exit_x_assignment_idx],
                     width=300,
                     height=30,
@@ -213,7 +238,7 @@ class Player(pyglet.sprite.Sprite):
             next_map_cue.text = "下一关：" + maps[self.map.exits[idx]].display_name
 
     def check_if_hit_npc_or_bonus(self):
-        try:
+        if hasattr(self, "map"):
             for npc in self.map.npcs:
                 if self.lane == npc.lane and 0 < npc.y - self.y < 45:
                     if player_bulldozer_mode:
@@ -227,20 +252,25 @@ class Player(pyglet.sprite.Sprite):
             for bonus in self.map.bonuses:
                 if self.lane == bonus.lane and 0 < bonus.y - self.y < 45:
                     bonus.on_hit(self)
-        except AttributeError:
-            pass
+
+    def resume_running(self, _):
+        # called after player is no longer frozen
+        ice_cube_img.visible = False
+        self.allowed_to_run = True
 
 
 class NPC(pyglet.sprite.Sprite):
     # NPC: non-player characters
     # inherits pyglet.sprite.Sprite
     # includes other students and faculty
+    is_player = False
+    initiating = True
+    running = True
+
     def __init__(self, track, lane=0, v=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.is_player = False
+        self.opacity = 160  # looks gray
         self.map = track
-        self.initiating = True
-        self.running = True
         self.lane = lane
         # init_v is static
         self.init_v = v
@@ -395,6 +425,16 @@ class Bonus(pyglet.sprite.Sprite):
             if character.is_player:
                 player_bulldozer_mode = False
                 character.map.toggle_bulldozer_bonuses()
+        elif self.category == "freeze":
+            if character.is_player:
+                character.allowed_to_run = False
+                character.v = 0
+                ice_cube_img.position = player.position
+                ice_cube_img.visible = True
+                pyglet.clock.schedule_once(character.resume_running, 2)
+        elif self.category == "-1s":
+            if character.is_player:
+                clocktick(0)
 
         self.category = "disabled"
 
@@ -476,7 +516,7 @@ class FinishLine(pyglet.sprite.Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.y = height + 120
-        self.x = width / 2
+        self.x = width // 2
         self.moving = False
 
     def update(self, dt):
@@ -499,7 +539,7 @@ class FinishLine(pyglet.sprite.Sprite):
 
 """ GRAPHICS SETUP """
 # (nearly) fullscreen
-width, height = 1920, 1040
+width, height = 1920, 1020
 window = pyglet.window.Window(width=width, height=height, caption="跑饭 - Lunchrush")
 window.set_icon(pyglet.image.load("./res/icon.png"))
 lane_width = 100
@@ -516,7 +556,7 @@ def centered_image(filename: str):
     return center_image(pyglet.resource.image(filename))
 
 
-lane_sep_img = pyglet.image.load("./res/track-separator.png")
+lane_sep_img = pyglet.resource.image("track-separator.png")
 
 # button images beside choice labels to indicate player which button(s) to push
 button_imgs = {}
@@ -524,21 +564,72 @@ for name in ("red", "yellow", "both"):
     button_imgs[name] = pyglet.image.load(f"./res/buttons/{name}.png")
     button_imgs[name].anchor_y = 40
 
+BUTTON_X_AXIS = 60  # x-axis of the button icons of exit selection
+
+lunchrush_img = pyglet.sprite.Sprite(
+    img=pyglet.resource.image("lunchrush.png"), x=width - 320, y=40
+)
+
+ice_cube_img = pyglet.sprite.Sprite(img=centered_image("ice_cube.png"), x=0, y=0)
+ice_cube_img.visible = False
+ice_cube_img.opacity = 192  # translucent overlay on player when they're frozen
 
 """ SCORING SETUP """
 # displayed and updated over time
 time = [12, 0, 0]
 time_label = make_label(text=format_time(time), x=20, y=(height - 68), size=48)
-vlabel = make_label(text="v=0.00", x=20, y=(height - 120), size=32)
-ylabel = make_label(text="y=0.00/0", x=20, y=(height - 160), size=32)
-maplabel = make_label(
+v_label = make_label(text="v=0.00", x=20, y=(height - 120), size=32)
+y_label = make_label(text="y=0.00/0", x=20, y=(height - 160), size=32)
+map_label = make_label(
     text="你在： ---", x=20, y=(height - (220 if DEBUG else 120)), size=32,
 )
 bulldozer_label = make_label(text="您已进入推土机模式", x=width - 300, y=360)
-people_killed_label_template = lambda n_killed: f"已杀害 {n_killed} 人"
+# NOTE TO CLUB UNION:
+# IF YOU'RE TRYING TO INTERVENE,
+# FUCK YOU.
+people_killed_label_template = lambda n_killed: f"已碾压 {n_killed} 人"
 people_killed_label = make_label(
     text=people_killed_label_template(0), x=width - 300, y=320,
 )
+
+victory_bg = pyglet.sprite.Sprite(
+    img=centered_image("victory_bg.png"), x=width // 2, y=height // 2,
+)
+
+victory_bg.scale_x = 4
+victory_bg.scale_y = 4
+victory_bg.visible = False
+
+victory_label = make_label(
+    size=32,
+    x=width // 2,
+    y=height // 2 - 300,
+    width=width - 100,
+    anchor_x="center",
+    align="center",
+    color=(255, 255, 255, 255),
+    bold=True,
+    multiline=True,
+)
+
+WEIGHT_DIVISOR = 16
+
+
+def victory_fx(dt):
+    # move player to window center
+    # until player is roughly aligned (20px bias allowed)
+    if not (abs(player.x - width // 2) < 20 and abs(player.y - height // 2) < 20):
+        player.x = ((WEIGHT_DIVISOR - 1) * player.x + width / 2) // WEIGHT_DIVISOR
+        player.y = ((WEIGHT_DIVISOR - 1) * player.y + height / 2) // WEIGHT_DIVISOR
+        # scale: target is 4; to slow down expansion, `4` is given a weight of 3/4
+        scale = ((WEIGHT_DIVISOR - 1) * player.scale_x + 4) / WEIGHT_DIVISOR
+        player.scale_x = scale
+        player.scale_y = scale
+
+    victory_bg.rotation += 4 * dt
+    if victory_bg.rotation > 360:
+        victory_bg.rotation -= 360
+
 
 """ MAPS INITIATION """
 # load all maps listed in efzmaps.csv
@@ -560,7 +651,11 @@ for map_key in raw_maps:
 route = []
 map_idx = 0
 next_map_cue = make_label(
-    x=width / 2, y=(height + 20), color=(248, 101, 57, 255), size=32, anchor_x="center",
+    x=width // 2,
+    y=(height + 20),
+    color=(248, 101, 57, 255),
+    size=32,
+    anchor_x="center",
 )
 finish_line = FinishLine(img=centered_image("finish_line.png"))
 
@@ -643,26 +738,26 @@ def on_draw():
             player.load_map()
             player.allowed_to_run = True
             confirmed = False
+            pyglet.clock.schedule_interval(clocktick, 1)  # start clock ticking
             init_selections_left -= 1
 
     else:
         if not player.reached_cafeteria:
             time_label.text = format_time(time)
         time_label.draw()
-        maplabel.draw()
+        map_label.draw()
         if player_bulldozer_mode:
             bulldozer_label.draw()
             people_killed_label.text = people_killed_label_template(
                 player.people_killed
             )
             people_killed_label.draw()
-        elif player.reached_cafeteria and player.people_killed:
-            people_killed_label.draw()
+
         if DEBUG:
-            vlabel.text = f"v={player.v: .2f}"
-            vlabel.draw()
-            ylabel.text = f"y={player.absolute_y: .2f}/{player.map.length}"
-            ylabel.draw()
+            v_label.text = f"v={player.v: .2f}"
+            v_label.draw()
+            y_label.text = f"y={player.absolute_y: .2f}/{player.map.length}"
+            y_label.draw()
         for x in calc_lane_separators_x(width, lane_width, player.map.lanes):
             lane_sep_img.blit(x, 0)
         finish_line.draw()
@@ -671,13 +766,17 @@ def on_draw():
         route[map_idx].bonus_batch.draw()
         if player.show_choices:
             player.exit_choices_labels_batch.draw()
-            button_x_axis = width - 380
-            button_imgs["red"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[0])
-            button_imgs["yellow"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[1])
+            button_imgs["red"].blit(BUTTON_X_AXIS, CHOICE_BUTTONS_Y_AXES[0])
+            button_imgs["yellow"].blit(BUTTON_X_AXIS, CHOICE_BUTTONS_Y_AXES[1])
             if len(player.exit_choices) == 3:
-                button_imgs["both"].blit(button_x_axis, CHOICE_BUTTONS_Y_AXES[2])
+                button_imgs["both"].blit(BUTTON_X_AXIS, CHOICE_BUTTONS_Y_AXES[2])
         player.minimap.blit(100, 500 if DEBUG else 600)
+        victory_bg.draw()
+        victory_label.draw()
         player.draw()
+        ice_cube_img.draw()
+
+    lunchrush_img.draw()  # on-the-go marketing
 
 
 """ EVENTS """
@@ -697,6 +796,17 @@ def on_key_press(symbol, mods):
         player.alter_exit(1)
     elif symbol == keys._3:
         player.alter_exit(2)
+    elif symbol == keys.H:
+        move_cursor(selection_cursor, "h", cursor_matrix_size)
+    elif symbol == keys.J:
+        move_cursor(selection_cursor, "j", cursor_matrix_size)
+    elif symbol == keys.K:
+        move_cursor(selection_cursor, "k", cursor_matrix_size)
+    elif symbol == keys.L:
+        move_cursor(selection_cursor, "l", cursor_matrix_size)
+    elif symbol == keys.ENTER:
+        global confirmed
+        confirmed = True
 
 
 """ SERIAL """
@@ -794,7 +904,6 @@ def clocktick(_):
             time[i - 1] += 1
 
 
-pyglet.clock.schedule_interval(clocktick, 1)
 pyglet.clock.schedule_interval(react_to_serial, 0.02)
 pyglet.clock.schedule_interval(refresh_NPCs, 0.05)
 pyglet.clock.schedule_interval(refresh_bonuses, 0.05)
