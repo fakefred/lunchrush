@@ -570,7 +570,9 @@ def centered_image(filename: str):
     return center_image(pyglet.resource.image(filename))
 
 
-lane_sep_img = pyglet.resource.image("track-separator.png")
+solid_line_img = pyglet.resource.image("track_separator_solid.png")
+lane_sep_img = pyglet.resource.image("track_separator.png")
+LN_SEP_SEGM_LEN = 156
 
 # button images beside choice labels to indicate player which button(s) to push
 button_imgs = {}
@@ -772,8 +774,11 @@ def on_draw():
             v_label.draw()
             y_label.text = f"y={player.absolute_y: .2f}/{player.map.length}"
             y_label.draw()
-        for x in calc_lane_separators_x(width, lane_width, player.map.lanes):
-            lane_sep_img.blit(x, 0)
+        x_axes = calc_lane_separators_x(width, lane_width, player.map.lanes)
+        for x in (x_axes[0], x_axes[-1]):  # exterior boundary
+            solid_line_img.blit(x, 0)
+        for x in x_axes[1:-1]:  # interior seps
+            lane_sep_img.blit(x, -player.absolute_y % LN_SEP_SEGM_LEN - LN_SEP_SEGM_LEN)
         finish_line.draw()
         next_map_cue.draw()
         route[map_idx].npc_batch.draw()
