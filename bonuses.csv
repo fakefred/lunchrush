@@ -1,0 +1,6 @@
+name,image,weight,1_lane,leftmost_lane,rightmost_lane
+slip_left,slip_left.png,1.0,0,0,1
+slip_right,slip_right.png,1.0,0,1,0
+bulldozer,bulldozer.png,0.6,1,1,1
+freeze,freeze.png,0.4,0,1,1
+-1s,-1s.png,0.4,1,1,1

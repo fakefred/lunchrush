@@ -1,6 +1,7 @@
 #!/usr/bin/python3.8
 import pyglet
 from readmaps import *
+from readbonuses import *
 from readserial import view_value, read_thread
 from utils import *
 from math import sqrt
@@ -12,13 +13,15 @@ keys = pyglet.window.key
 avatars = [file for file in listdir("./res/player/") if file.endswith(".png")]
 
 CHOICE_BUTTONS_Y_AXES = (200, 150, 100)
-DEBUG = True
+DEBUG = False
 
 init_selections_left = 2
 player_bulldozer_mode = False
 
+BONUS_DATA = read_bonuses()
+
 """ ALL THE CLASSES """
-base_velocity = 120 if DEBUG else 36
+base_velocity = 120 if DEBUG else 72
 
 
 class Player(pyglet.sprite.Sprite):
@@ -90,15 +93,13 @@ class Player(pyglet.sprite.Sprite):
 
     def update(self, dt):
         if not self.reached_cafeteria:
-            try:
+            if hasattr(self, "dest_x"):
                 if self.initiating:
                     self.x = self.dest_x
                     self.initiating = False
 
                 if self.dest_x != self.x:
                     self.x = round((self.dest_x + self.x) / 2)
-            except AttributeError:
-                pass
 
             self.delta_t += dt
             # decrease self.v over time after each step until player stops
@@ -388,7 +389,9 @@ class Bonus(pyglet.sprite.Sprite):
     def __init__(self, category, lane=0, lanes_x=(), *args, **kwargs):
         self._category = category
         super().__init__(
-            img=centered_image("bonus/" + BONUS_FILENAMES[category]), *args, **kwargs,
+            img=centered_image("bonus/" + BONUS_DATA[category]["image"]),
+            *args,
+            **kwargs,
         )
         self.lane = lane
         self.x = lanes_x[lane]
@@ -487,17 +490,28 @@ class Map:
         bonuses = []
         batch = pyglet.graphics.Batch()
 
-        for _ in range(round(self.bonus_density * self.length * self.lanes)):
-            bonuses.append(
-                Bonus(
-                    # reads keys from BONUS_FILENAMES
-                    choice(list(BONUS_FILENAMES)),
-                    lane=randint(0, self.lanes - 1),
-                    lanes_x=self.lanes_x,
-                    y=randint(0, self.length),
-                    batch=batch,
+        while len(bonuses) < self.bonus_density * self.length * self.lanes:
+            category = choice(list(BONUS_DATA))
+            bonus = BONUS_DATA[category]
+            lane = randint(0, self.lanes - 1)
+            if not (
+                # check if bonus is allowed on current map or on randomly generated lane
+                (self.lanes == 1 and not bonus["1_lane"])  # single lane
+                or (lane == 0 and not bonus["leftmost_lane"])
+                or (lane == self.lanes - 1 and not bonus["rightmost_lane"])
+            ) and (
+                bonus["weight"] == 1.0 or bonus["weight"] > random()
+            ):  # also apply weight
+                bonuses.append(
+                    Bonus(
+                        category,
+                        lane=lane,
+                        lanes_x=self.lanes_x,
+                        y=randint(100, self.length),
+                        batch=batch,
+                    )
                 )
-            )
+
         self.bonuses = bonuses
         self.bonus_batch = batch
 

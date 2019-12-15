@@ -46,15 +46,6 @@ def calc_selecs_x(
         )
 
 
-BONUS_FILENAMES = {
-    "slip_left": "slip_left.png",
-    "slip_right": "slip_right.png",
-    "bulldozer": "bulldozer.png",
-    "freeze": "freeze.png",
-    "-1s": "-1s.png",
-}
-
-
 def make_label(text="", size=24, x=0, y=0, color=(0, 0, 0, 255), *args, **kwargs):
     return Label(
         text=text,

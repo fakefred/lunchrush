@@ -3,7 +3,7 @@ from utils import calc_lanes_x
 
 
 def read(window_width: int, lane_width: int) -> dict:
-    maps_file = list(reader(open('efzmaps.csv')))
+    maps_file = list(reader(open("efzmaps.csv")))
     keys = maps_file[0]
     values = maps_file[1:]
     maps = {}
@@ -14,8 +14,8 @@ def read(window_width: int, lane_width: int) -> dict:
         line[3] = int(line[3]) * 40  # convert paces to pixels
         line[4] = float(line[4])
         line[5] = float(line[5])
-        line[6] = line[6].split(';')
-        line[7] = f'./res/minimap/{line[7]}.png'
+        line[6] = line[6].split(";")
+        line[7] = f"./res/minimap/{line[7]}.png"
         # this_map = {'lanes_x': calc_lanes_x(window_width, lane_width, line[2])}
         this_map = {}
         for i in range(1, len(line)):
@@ -24,5 +24,6 @@ def read(window_width: int, lane_width: int) -> dict:
         maps[line[0]] = this_map
 
     return maps
+
 
 LIST_OF_CLASSROOMS = [line.strip() for line in open("efzclassrooms.txt").readlines()]
