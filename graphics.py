@@ -15,7 +15,7 @@ avatars = [file for file in listdir("./res/player/") if file.endswith(".png")]
 CHOICE_BUTTONS_Y_AXES = (200, 150, 100)
 DEBUG = False
 
-init_selections_left = 2
+init_selections_left = 3
 player_bulldozer_mode = False
 
 BONUS_DATA = read_bonuses()
@@ -714,6 +714,8 @@ for map_name in LIST_OF_CLASSROOMS:  # 29 classes
     clr_id += 1
 prev_clr_id = -1
 
+tutorial_img = pyglet.resource.image("tutorial.png")
+
 
 @window.event
 def on_draw():
@@ -721,7 +723,7 @@ def on_draw():
     # equivalent of clearing canvas
     white.blit(0, 0)  # update time label, unless reached cafeteria
     global init_selections_left, confirmed, selection_cursor, cursor_matrix_size, prev_clr_id
-    if init_selections_left == 2:
+    if init_selections_left == 3:
         # select avatar
         avi_selection_label.draw()
         avi_batch.draw()
@@ -738,7 +740,7 @@ def on_draw():
             selection_cursor = [0, 0]
             init_selections_left -= 1
 
-    elif init_selections_left == 1:
+    elif init_selections_left == 2:
         # select classroom of departure
         clr_selection_label.draw()
         clr_batch.draw()
@@ -751,10 +753,16 @@ def on_draw():
 
         if confirmed:
             route.append(maps[LIST_OF_CLASSROOMS[id]])
+            confirmed = False
+            init_selections_left -= 1
+
+    elif init_selections_left == 1:
+        tutorial_img.blit(0, 0)
+        if confirmed:
             player.load_map()
             player.allowed_to_run = True
+            pyglet.clock.schedule_interval(clocktick, 1)  # start clock-ticking
             confirmed = False
-            pyglet.clock.schedule_interval(clocktick, 1)  # start clock ticking
             init_selections_left -= 1
 
     else:
