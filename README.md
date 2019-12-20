@@ -15,7 +15,7 @@ You can be qualified for a 0.40 RMB discount
 The game currently can be controlled with either (a) the keyboard (left/right arrow and spacebar), and (b) an ESP32 (for example) with [Micropython](https://micropython.org). The scheme is **physical switches ->(GPIO)-> ESP32 ->(USB Serial)-> `pyserial` -> Lunchrush.** The pin connections are:
 
 GPIO Pin No. | Physical Equipment | Controls
----|---|---|---
+---|---|---
 34 | Left Pedal | `player.step()` (in combination with 35)
 35 | Right Pedal | `player.step()`
 32 | Left Button | `player.left()` and left in init selection phase
