@@ -450,6 +450,7 @@ class Map:
         lanes=1,
         length=10000,
         npc_density=0.0,
+        npc_reverse_rate=0.0,
         bonus_density=0.0,
         exits=[],
         minimap_image_path="",
@@ -461,6 +462,8 @@ class Map:
         self.length = length
         # npc_density: number of npcs / length
         self.npc_density = npc_density
+        # npc_reverse_rate: N(NPC's going backwards)/N(NPC's)
+        self.npc_reverse_rate = npc_reverse_rate
         self.initiate_npcs()
         self.bonus_density = bonus_density
         self.initiate_bonuses()
@@ -470,7 +473,8 @@ class Map:
     def initiate_npcs(self):
         npcs = []
         batch = pyglet.graphics.Batch()
-        for _ in range(round(self.npc_density * self.length * self.lanes)):
+        total = self.npc_density * self.length * self.lanes
+        for _ in range(round(total * (1-self.npc_reverse_rate * 1.25))):
             # add new NPCs to `batch`
             # NPCs that have been running midway since game started
             npcs.append(
@@ -481,6 +485,18 @@ class Map:
                     y=randint(-self.length / 4, self.length),
                     batch=batch,
                     v=40 + random() * 40,
+                )
+            )
+        for _ in range(round(total * self.npc_reverse_rate * 1.25)):
+            # NPC's, running in reverse
+            npcs.append(
+                NPC(
+                    img=centered_image(f"player/{choice(avatars)}"),
+                    track=self,
+                    lane=randint(0, self.lanes - 1),
+                    y=randint(0, self.length * 5 / 4),
+                    batch=batch,
+                    v=-40 - random() * 40,
                 )
             )
         self.npcs = npcs
@@ -660,6 +676,7 @@ for map_key in raw_maps:
         lanes=map_dict["lanes"],
         length=map_dict["length"],
         npc_density=map_dict["npc_density"],
+        npc_reverse_rate=map_dict["npc_reverse_rate"],
         bonus_density=map_dict["bonus_density"],
         exits=map_dict["exits"],
         minimap_image_path=map_dict["minimap_image"],
