@@ -28,6 +28,8 @@ s402,高三 6 班,1,9,0,0,0,s402w;s402e,corridors/s
 s403,高三 7 班,1,9,0,0,0,s403e;s403w,corridors/s
 s404,高三 8 班,1,9,0,0,0,s404e;s404w,corridors/s
 n402,高三 9 班,1,9,0,0,0,n402w;n402e,corridors/n
+intl,国际部,1,9,0,0,0,keysquare,corridors/intl
+keysquare,金钥匙广场,6,70,0.001,0.05,0.0008,i1,corridors/intl
 i1,信息 1 楼走廊,5,50,0.002,0.1,0.0004,ilb1;nw.1-2,corridors/info
 i2,信息 2 楼走廊,5,50,0.002,0.1,0.0004,nw.2-1;nw.2-3,corridors/info
 i3,信息 3 楼走廊,5,50,0.002,0.1,0.0004,ilb3;nw.3-2,corridors/info
