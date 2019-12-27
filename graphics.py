@@ -7,6 +7,18 @@ from utils import *
 from math import sqrt
 from random import random, randint, choice
 from os import listdir
+from datetime import datetime
+
+
+def get_time_snapshot():
+    # return local time truncated to seconds in ISO format
+    return datetime.now().replace(microsecond=0).isoformat()
+
+
+# analytics: records performance of each player
+analytics_file = open("./analytics.csv", "a")
+analytics_file.write(get_time_snapshot() + ", ")
+# will be saved when player reaches cafeteria
 
 keys = pyglet.window.key
 
@@ -180,6 +192,12 @@ class Player(pyglet.sprite.Sprite):
                 pyglet.clock.schedule_interval(victory_fx, 0.05)
                 for label in (map_label, time_label, y_label, v_label):
                     label.visible = False
+
+                # update analytics
+                analytics_file.write(
+                    f"{route[0].name}, {route[-1].name}, {seconds_spent(time)}, {self.people_killed}\n"
+                )
+                analytics_file.close()
 
                 pyglet.clock.unschedule(react_to_serial)
                 pyglet.clock.unschedule(refresh_NPCs)
@@ -474,7 +492,7 @@ class Map:
         npcs = []
         batch = pyglet.graphics.Batch()
         total = self.npc_density * self.length * self.lanes
-        for _ in range(round(total * (1-self.npc_reverse_rate * 1.25))):
+        for _ in range(round(total * (1 - self.npc_reverse_rate * 1.25))):
             # add new NPCs to `batch`
             # NPCs that have been running midway since game started
             npcs.append(

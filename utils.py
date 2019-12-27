@@ -98,5 +98,11 @@ def time_spent(time: list):
     return (
         (f"{h-12} 小时 " if h > 12 else "")
         + (f"{m} 分 " if m else "")
-        + f"{s if s > 9 else '0'+str(m)} 秒"
+        + f"{s if s > 9 else '0'+str(s)} 秒"
     )
+
+
+def seconds_spent(time: list):
+    h, m, s = tuple(time)
+    return (h - 12) * 3600 + m * 60 + s
+
